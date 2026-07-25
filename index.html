@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>Marea — pavimento pelvico</title>
+<meta name="description" content="Allenamento del pavimento pelvico con timer guidato e monitoraggio dei progressi.">
+<meta name="theme-color" content="#161320">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Marea">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#161320; --surface:#1F1B2E; --surface2:#2A2440; --line:#372F52;
+  --text:#EDE9F5; --muted:#9C93B8;
+  --effort:#E4577E; --effort-dim:#7A2B44;
+  --release:#9FD4B4; --release-dim:#3C6152;
+  --gold:#D9B26A;
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Karla',system-ui,-apple-system,sans-serif;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  background:var(--ink); color:var(--text); font-family:var(--body);
+  font-size:16px; line-height:1.5; overscroll-behavior:none;
+  -webkit-font-smoothing:antialiased;
+}
+#app{max-width:460px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;
+  padding-top:var(--safe-t)}
+main{flex:1;padding:0 20px 132px;}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-0.02em;font-weight:800}
+.eyebrow{font-family:var(--body);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);font-weight:700}
+
+/* ---------- header ---------- */
+header{padding:22px 20px 14px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+header h1{font-size:26px}
+.lvl-chip{font-family:var(--body);font-size:12px;font-weight:700;color:var(--gold);
+  border:1px solid rgba(217,178,106,.35);border-radius:999px;padding:5px 11px;white-space:nowrap}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:14px}
+.card h2{font-size:19px;margin-bottom:4px}
+.sub{color:var(--muted);font-size:14px}
+
+/* ---------- next workout ---------- */
+.wk-focus{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--release);background:rgba(159,212,180,.1);border-radius:6px;padding:4px 9px;margin-bottom:12px}
+.wk-meta{display:flex;gap:18px;margin:16px 0 4px;flex-wrap:wrap}
+.wk-meta div{min-width:0}
+.wk-meta b{display:block;font-family:var(--display);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.wk-meta span{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.blocks{list-style:none;padding:0;margin:16px 0 0;border-top:1px solid var(--line)}
+.blocks li{display:flex;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.blocks li:last-child{border-bottom:0}
+.dot{width:7px;height:7px;border-radius:50%;flex:none;transform:translateY(-2px)}
+.blocks .nm{flex:1;font-weight:500}
+.blocks .qt{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ---------- buttons ---------- */
+button{font-family:var(--body);font-size:15px;font-weight:700;cursor:pointer;border:0;color:inherit;background:none}
+.btn{display:block;width:100%;padding:17px;border-radius:16px;background:var(--effort);color:#fff;
+  letter-spacing:.01em;transition:transform .12s ease,filter .12s ease}
+.btn:active{transform:scale(.98);filter:brightness(1.08)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn-row{display:flex;gap:10px;margin-top:12px}
+.btn-row .btn{margin:0}
+button:focus-visible,a:focus-visible{outline:2px solid var(--release);outline-offset:3px;border-radius:8px}
+
+/* ---------- tab bar ---------- */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:rgba(22,19,32,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);padding-bottom:var(--safe-b)}
+.nav-in{max-width:460px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr}
+nav button{padding:13px 0 15px;color:var(--muted);font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:5px}
+nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+nav button[aria-selected=true]{color:var(--text)}
+
+/* ---------- SIGNATURE: the tide dial ---------- */
+#run{position:fixed;inset:0;z-index:60;background:var(--ink);display:none;
+  flex-direction:column;padding:calc(var(--safe-t) + 14px) 20px calc(var(--safe-b) + 20px)}
+#run.on{display:flex}
+.run-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.run-top .nm{font-family:var(--display);font-weight:600;font-size:15px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);flex:none;
+  display:grid;place-items:center;color:var(--muted);font-size:17px}
+
+.dial-wrap{flex:1;display:grid;place-items:center;position:relative;margin:8px 0}
+.dial{position:relative;width:min(78vw,320px);aspect-ratio:1}
+.dial svg{width:100%;height:100%;display:block}
+.track{fill:none;stroke:var(--surface2);stroke-width:5}
+.arc{fill:none;stroke:var(--effort);stroke-width:5;stroke-linecap:round;
+  transition:stroke .5s ease}
+.bowl{fill:#1B1728}
+#liquid{transition:transform .9s cubic-bezier(.4,0,.2,1)}
+#waveA{fill:var(--effort);opacity:.85;transition:fill .6s ease}
+#waveB{fill:var(--effort);opacity:.35;transition:fill .6s ease}
+.wave-anim #waveA{animation:drift 7s linear infinite}
+.wave-anim #waveB{animation:drift 11s linear infinite reverse}
+@keyframes drift{to{transform:translateX(-240px)}}
+
+.dial-txt{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.cue{font-family:var(--body);font-size:12px;font-weight:700;letter-spacing:.24em;
+  text-transform:uppercase;color:#fff;opacity:.92;text-shadow:0 1px 6px rgba(0,0,0,.55)}
+.count{font-family:var(--display);font-size:clamp(62px,20vw,86px);font-weight:800;line-height:.95;
+  font-variant-numeric:tabular-nums;margin:6px 0 2px;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.cue-sub{font-size:13px;color:rgba(255,255,255,.72);font-weight:500;
+  text-shadow:0 1px 6px rgba(0,0,0,.55);min-height:20px;padding:0 12px}
+
+/* phase strip = whole session at a glance */
+.strip{display:flex;gap:2px;height:6px;margin:2px 0 14px;align-items:stretch}
+.strip i{flex:1;border-radius:2px;background:var(--surface2);transition:background .25s,opacity .25s}
+.strip i.c{background:var(--effort-dim)}
+.strip i.r{background:var(--release-dim)}
+.strip i.done{opacity:.45}
+.strip i.now{background:#fff}
+.run-info{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);
+  font-variant-numeric:tabular-nums;margin-bottom:14px}
+
+/* ---------- progress ---------- */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px 16px}
+.stat b{display:block;font-family:var(--display);font-size:29px;font-weight:800;
+  font-variant-numeric:tabular-nums;line-height:1.1}
+.stat span{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.bars{display:flex;align-items:flex-end;gap:4px;height:78px;margin:18px 0 8px}
+.bars div{flex:1;background:var(--surface2);border-radius:3px 3px 0 0;min-height:3px;position:relative}
+.bars div.has{background:linear-gradient(180deg,var(--effort),var(--effort-dim))}
+.bars div.today{outline:1px solid var(--release);outline-offset:1px}
+.bar-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.lvlbar{height:7px;background:var(--surface2);border-radius:99px;overflow:hidden;margin:14px 0 8px}
+.lvlbar i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .5s}
+.hist{list-style:none;padding:0;margin:0}
+.hist li{display:flex;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.hist li:last-child{border-bottom:0}
+.hist .d{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hist .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- guide ---------- */
+.guide h3{font-size:16px;margin:22px 0 7px}
+.guide h3:first-child{margin-top:0}
+.guide p,.guide li{font-size:14.5px;color:#D6D0E6}
+.guide ul{padding-left:19px;margin:7px 0}
+.guide li{margin-bottom:6px}
+.warn{border-left:3px solid var(--gold);padding:2px 0 2px 14px;margin:18px 0}
+.warn p{color:var(--muted);font-size:13.5px;margin:0}
+.toggle{display:flex;justify-content:space-between;align-items:center;padding:13px 0;
+  border-bottom:1px solid var(--line);font-size:15px;font-weight:500}
+.toggle:last-of-type{border-bottom:0}
+.sw{width:50px;height:29px;border-radius:99px;background:var(--surface2);position:relative;
+  transition:background .2s;flex:none}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;
+  background:#fff;transition:transform .2s}
+.sw[aria-pressed=true]{background:var(--release)}
+.sw[aria-pressed=true]::after{transform:translateX(21px)}
+
+/* ---------- done screen ---------- */
+#done{position:fixed;inset:0;z-index:70;background:var(--ink);display:none;
+  flex-direction:column;justify-content:center;padding:40px 28px calc(var(--safe-b) + 28px);text-align:center}
+#done.on{display:flex}
+#done .big{font-family:var(--display);font-size:40px;font-weight:800;letter-spacing:-.03em;margin:10px 0 6px}
+.done-stats{display:flex;justify-content:center;gap:26px;margin:26px 0 32px}
+.done-stats b{display:block;font-family:var(--display);font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.done-stats span{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 86px);transform:translateX(-50%);
+  background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px 17px;
+  font-size:13.5px;z-index:90;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap}
+.toast.on{opacity:1}
+.view{display:none}.view.on{display:block}
+.tiny{font-size:12px;color:var(--muted);text-align:center;margin-top:22px;line-height:1.6}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <h1 id="hdr">Marea</h1>
+    <span class="lvl-chip" id="lvlChip">Livello 1</span>
+  </header>
+
+  <main>
+    <!-- ============ SESSIONE ============ -->
+    <section class="view on" id="v-train">
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:9px">Prossima sessione</div>
+        <span class="wk-focus" id="wkFocus"></span>
+        <h2 id="wkName"></h2>
+        <p class="sub" id="wkDesc" style="margin:6px 0 0"></p>
+        <div class="wk-meta">
+          <div><b id="wkTime"></b><span>Durata</span></div>
+          <div><b id="wkReps"></b><span>Contrazioni</span></div>
+          <div><b id="wkPos"></b><span>Posizione</span></div>
+        </div>
+        <ul class="blocks" id="wkBlocks"></ul>
+        <div class="btn-row">
+          <button class="btn" id="startBtn">Inizia</button>
+          <button class="btn btn-ghost" id="shuffleBtn" style="flex:none;width:104px">Cambia</button>
+        </div>
+      </div>
+      <p class="tiny">Da 1 a 3 sessioni al giorno, 5–6 giorni a settimana.<br>Ogni sessione è diversa dalle precedenti.</p>
+    </section>
+
+    <!-- ============ PROGRESSI ============ -->
+    <section class="view" id="v-stats">
+      <div class="stats">
+        <div class="stat"><b id="sStreak">0</b><span>Giorni di fila</span></div>
+        <div class="stat"><b id="sTotal">0</b><span>Sessioni</span></div>
+        <div class="stat"><b id="sReps">0</b><span>Contrazioni</span></div>
+        <div class="stat"><b id="sHold">0</b><span>Tempo in tenuta</span></div>
+      </div>
+
+      <div class="card">
+        <h2 id="lvlName">Livello 1</h2>
+        <p class="sub" id="lvlDesc"></p>
+        <div class="lvlbar"><i id="lvlBar" style="width:0%"></i></div>
+        <p class="sub" id="lvlNext" style="font-size:13px"></p>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Ultimi 14 giorni</div>
+        <div class="bars" id="bars"></div>
+        <div class="bar-lbl"><span id="barFrom"></span><span>oggi</span></div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:4px">Storico</div>
+        <ul class="hist" id="hist"></ul>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:10px">Dati</div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="expBtn">Esporta</button>
+          <button class="btn btn-ghost" id="impBtn">Importa</button>
+        </div>
+        <input type="file" id="impFile" accept="application/json" hidden>
+        <button class="btn btn-ghost" id="resetBtn" style="margin-top:10px;color:var(--effort);border-color:var(--effort-dim)">Azzera tutto</button>
+        <p class="sub" style="font-size:12.5px;margin:12px 0 0">iOS può cancellare i dati salvati se non apri l'app per settimane. Esporta ogni tanto.</p>
+      </div>
+    </section>
+
+    <!-- ============ GUIDA ============ -->
+    <section class="view guide" id="v-guide">
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:10px">Impostazioni</div>
+        <div class="toggle">Segnali sonori <button class="sw" id="swSound" aria-pressed="true" aria-label="Segnali sonori"></button></div>
+        <div class="toggle">Voce guida <button class="sw" id="swVoice" aria-pressed="false" aria-label="Voce guida"></button></div>
+        <div class="toggle">Schermo sempre acceso <button class="sw" id="swWake" aria-pressed="true" aria-label="Schermo sempre acceso"></button></div>
+      </div>
+
+      <div class="card">
+        <h3>Trovare i muscoli giusti</h3>
+        <p>Immagina di trattenere l'aria intestinale e contemporaneamente di interrompere il flusso dell'urina. La sensazione è di <b>sollevamento verso l'interno</b>, non di spinta verso il basso.</p>
+        <ul>
+          <li>Glutei, cosce e addome restano rilassati.</li>
+          <li>Il respiro continua: espira mentre contrai, inspira mentre rilasci.</li>
+          <li>Non allenarti interrompendo davvero la minzione: è solo un test, e ripetuto può causare problemi.</li>
+        </ul>
+
+        <h3>Rilasciare è metà dell'esercizio</h3>
+        <p>Il recupero tra una contrazione e l'altra è lungo quanto o il doppio della tenuta. Un muscolo che non torna a riposo completo si affatica e perde forza. Se non riesci a completare l'ultima ripetizione con la stessa qualità della prima, il carico è troppo alto.</p>
+
+        <h3>Come progredisce il piano</h3>
+        <ul>
+          <li><b>Livello 1 — Fondamenta:</b> sdraiato, tenute brevi. Impari il gesto senza la gravità contro.</li>
+          <li><b>Livello 2 — Costruzione:</b> seduto, tenute più lunghe e contrazioni ad ascensore.</li>
+          <li><b>Livello 3 — Forza:</b> in piedi, alto volume e tenute sub-massimali.</li>
+          <li><b>Livello 4 — Funzionale:</b> la pre-contrazione prima di uno sforzo, che è il gesto che serve davvero nella vita quotidiana.</li>
+        </ul>
+        <p>Si sale di livello dopo 15 sessioni completate, che corrispondono più o meno a tre settimane. I risultati sui sintomi si vedono di solito tra le 6 e le 12 settimane di pratica costante.</p>
+
+        <h3>Tipi di esercizio</h3>
+        <ul>
+          <li><b>Tenute:</b> fibre lente, la resistenza che sostiene gli organi tutto il giorno.</li>
+          <li><b>Rapide:</b> fibre veloci, il riflesso che regge tosse, starnuto e risata.</li>
+          <li><b>Ascensore:</b> contrazione a gradini, allena il controllo fine.</li>
+          <li><b>Sub-massimali:</b> circa metà della forza tenuta a lungo, per la resistenza posturale.</li>
+          <li><b>Pre-contrazione:</b> stringi <i>prima</i> dello sforzo, non dopo.</li>
+        </ul>
+
+        <div class="warn">
+          <p>Questa app è uno strumento di allenamento, non una diagnosi. Rivolgiti a un medico o a un fisioterapista specializzato in riabilitazione del pavimento pelvico se hai dolore durante o dopo gli esercizi, se i sintomi peggiorano, se non riesci a percepire la contrazione, o in caso di gravidanza, post parto, post chirurgia prostatica. Un pavimento pelvico troppo contratto dà gli stessi sintomi di uno debole e richiede il trattamento opposto: in quel caso allenarsi di più peggiora le cose.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav>
+    <div class="nav-in">
+      <button data-tab="train" aria-selected="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Sessione</button>
+      <button data-tab="stats" aria-selected="false">
+        <svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg>Progressi</button>
+      <button data-tab="guide" aria-selected="false">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8.5v.01"/></svg>Guida</button>
+    </div>
+  </nav>
+</div>
+
+<!-- ============ RUNNER ============ -->
+<div id="run">
+  <div class="run-top">
+    <button class="icon-btn" id="quitBtn" aria-label="Chiudi">✕</button>
+    <div class="nm" id="runName"></div>
+    <button class="icon-btn" id="pauseBtn" aria-label="Pausa">❚❚</button>
+  </div>
+
+  <div class="dial-wrap">
+    <div class="dial">
+      <svg viewBox="0 0 240 240" aria-hidden="true">
+        <circle class="track" cx="120" cy="120" r="104"/>
+        <circle class="arc" id="arc" cx="120" cy="120" r="104"
+                transform="rotate(-90 120 120)"
+                stroke-dasharray="653.45" stroke-dashoffset="0"/>
+        <circle class="bowl" cx="120" cy="120" r="88"/>
+        <clipPath id="bowlClip"><circle cx="120" cy="120" r="88"/></clipPath>
+        <g clip-path="url(#bowlClip)">
+          <g id="liquid" style="transform:translate(0px,180px)">
+            <path id="waveB" d="M-240,14 q60,-13 120,0 t120,0 t120,0 t120,0 t120,0 V300 H-240 Z"/>
+            <path id="waveA" d="M-240,20 q60,14 120,0 t120,0 t120,0 t120,0 t120,0 V300 H-240 Z"/>
+          </g>
+        </g>
+      </svg>
+      <div class="dial-txt">
+        <div class="cue" id="cue">Preparati</div>
+        <div class="count" id="count">0</div>
+        <div class="cue-sub" id="cueSub"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="strip" id="strip"></div>
+  <div class="run-info">
+    <span id="infoL"></span><span id="infoR"></span>
+  </div>
+  <button class="btn btn-ghost" id="skipBtn">Salta blocco</button>
+</div>
+
+<!-- ============ DONE ============ -->
+<div id="done">
+  <div class="eyebrow">Sessione completata</div>
+  <div class="big" id="doneTitle">Fatto.</div>
+  <p class="sub" id="doneMsg"></p>
+  <div class="done-stats">
+    <div><b id="dReps">0</b><span>Contrazioni</span></div>
+    <div><b id="dHold">0s</b><span>In tenuta</span></div>
+    <div><b id="dStreak">0</b><span>Giorni di fila</span></div>
+  </div>
+  <button class="btn" id="doneBtn">Chiudi</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   1. LIBRERIA ALLENAMENTI
+   Basata sul protocollo standard di pelvic floor muscle training:
+   tenute lente (fibre tipo I) + contrazioni rapide (tipo II),
+   riposo >= tenuta, progressione per durata / volume / posizione.
+   ============================================================ */
+
+const LEVELS = [
+  {n:1, name:'Fondamenta', pos:'Sdraiato',
+   desc:'Impari il gesto senza il carico della gravità. Tenute brevi, molto recupero.', need:15},
+  {n:2, name:'Costruzione', pos:'Seduto',
+   desc:'Schiena dritta e piedi a terra. Tenute più lunghe e primo controllo fine.', need:15},
+  {n:3, name:'Forza', pos:'In piedi',
+   desc:'Contro gravità. Volume più alto e tenute sub-massimali prolungate.', need:15},
+  {n:4, name:'Funzionale', pos:'In piedi',
+   desc:'Pre-contrazione prima dello sforzo: il gesto che serve nella vita reale.', need:null}
+];
+
+// tipi di blocco: quick | hold | submax | elevator | pyramid | knack
+const WORKOUTS = [
+  /* ---------------- LIVELLO 1 ---------------- */
+  {id:'l1a', lvl:1, name:'Risveglio', focus:'Tecnica',
+   desc:'La prima presa di contatto: contrazioni corte, recupero doppio, nessuna fretta.',
+   blocks:[
+     {type:'hold',  reps:10, hold:3, rest:6,  name:'Tenute 3 s'},
+     {type:'quick', reps:10, hold:1, rest:3,  name:'Rapide'},
+     {type:'hold',  reps:6,  hold:4, rest:8,  name:'Tenute 4 s'}
+   ]},
+  {id:'l1b', lvl:1, name:'Riflesso', focus:'Fibre veloci',
+   desc:'Contrazioni brevi e nette. Allena la risposta che regge tosse e starnuto.',
+   blocks:[
+     {type:'quick', reps:10, sets:3, hold:1, rest:3, setRest:40, name:'Rapide'}
+   ]},
+  {id:'l1c', lvl:1, name:'Tenuta breve', focus:'Resistenza',
+   desc:'Quattro secondi di contrazione piena, otto di rilascio completo.',
+   blocks:[
+     {type:'hold', reps:8, sets:2, hold:4, rest:8, setRest:45, name:'Tenute 4 s'}
+   ]},
+  {id:'l1d', lvl:1, name:'Onda corta', focus:'Misto',
+   desc:'Alterna lente e rapide, così alleni entrambi i tipi di fibra nella stessa sessione.',
+   blocks:[
+     {type:'hold',  reps:8,  hold:3, rest:6, name:'Tenute 3 s'},
+     {type:'quick', reps:10, hold:1, rest:3, name:'Rapide'},
+     {type:'hold',  reps:5,  hold:5, rest:10, name:'Tenute 5 s'}
+   ]},
+
+  /* ---------------- LIVELLO 2 ---------------- */
+  {id:'l2a', lvl:2, name:'Sei secondi', focus:'Resistenza',
+   desc:'Il cuore del protocollo classico: tenute da 6 secondi in tre serie.',
+   blocks:[
+     {type:'hold', reps:10, sets:2, hold:6, rest:12, setRest:45, name:'Tenute 6 s'}
+   ]},
+  {id:'l2b', lvl:2, name:'Ascensore', focus:'Controllo',
+   desc:'Sali a gradini fino in cima, poi scendi un piano alla volta senza mollare di colpo.',
+   blocks:[
+     {type:'elevator', reps:6, steps:4, stepDur:3, topHold:2, rest:18, name:'Ascensore 4 piani'},
+     {type:'quick', reps:10, hold:1, rest:3, name:'Rapide'}
+   ]},
+  {id:'l2c', lvl:2, name:'Sandwich', focus:'Misto',
+   desc:'Rapide in apertura e chiusura, tenute lunghe nel mezzo quando sei già caldo.',
+   blocks:[
+     {type:'quick', reps:12, hold:1, rest:3, name:'Rapide'},
+     {type:'hold',  reps:8,  hold:5, rest:10, name:'Tenute 5 s'},
+     {type:'quick', reps:12, hold:1, rest:3, name:'Rapide'}
+   ]},
+  {id:'l2d', lvl:2, name:'Piramide', focus:'Progressione',
+   desc:'La tenuta cresce di un secondo alla volta fino a sette, poi torna indietro.',
+   blocks:[
+     {type:'pyramid', seq:[3,4,5,6,7,6,5,4,3], sets:2, setRest:50, restMult:2, name:'Piramide 3→7→3'}
+   ]},
+
+  /* ---------------- LIVELLO 3 ---------------- */
+  {id:'l3a', lvl:3, name:'Otto secondi', focus:'Resistenza',
+   desc:'In piedi, contro gravità. Se l\'ultima ripetizione perde qualità, fermati prima.',
+   blocks:[
+     {type:'hold', reps:10, sets:2, hold:8, rest:10, setRest:60, name:'Tenute 8 s'}
+   ]},
+  {id:'l3b', lvl:3, name:'Sub-massimali', focus:'Postura',
+   desc:'Circa metà della forza massima, tenuta a lungo. È così che il pavimento lavora tutto il giorno.',
+   blocks:[
+     {type:'submax', reps:5, hold:20, rest:20, level:.5, name:'Tenute al 50% · 20 s'},
+     {type:'quick',  reps:12, hold:1, rest:3, name:'Rapide'}
+   ]},
+  {id:'l3c', lvl:3, name:'Ascensore lungo', focus:'Controllo',
+   desc:'Cinque piani, pausa in cima, discesa controllata. È l\'esercizio più difficile da fare bene.',
+   blocks:[
+     {type:'elevator', reps:6, steps:5, stepDur:2, topHold:4, rest:20, name:'Ascensore 5 piani'}
+   ]},
+  {id:'l3d', lvl:3, name:'Circuito', focus:'Volume',
+   desc:'Tutti e tre i registri in sequenza. La sessione più impegnativa del livello.',
+   blocks:[
+     {type:'quick',  reps:15, hold:1, rest:3, name:'Rapide'},
+     {type:'hold',   reps:8,  hold:8, rest:10, name:'Tenute 8 s'},
+     {type:'submax', reps:3,  hold:20, rest:20, level:.5, name:'Tenute al 50% · 20 s'}
+   ]},
+
+  /* ---------------- LIVELLO 4 ---------------- */
+  {id:'l4a', lvl:4, name:'Dieci secondi', focus:'Resistenza',
+   desc:'Il tetto del protocollo. Oltre i dieci secondi non c\'è vantaggio dimostrato.',
+   blocks:[
+     {type:'hold', reps:10, sets:2, hold:10, rest:10, setRest:60, name:'Tenute 10 s'}
+   ]},
+  {id:'l4b', lvl:4, name:'Pre-contrazione', focus:'Funzionale',
+   desc:'Stringi un istante prima dello sforzo simulato. È il gesto che previene la perdita.',
+   blocks:[
+     {type:'knack', reps:12, hold:3, rest:7, name:'Pre-contrazione'},
+     {type:'hold',  reps:6, hold:8, rest:10, name:'Tenute 8 s'}
+   ]},
+  {id:'l4c', lvl:4, name:'Mantenimento', focus:'Misto',
+   desc:'La sessione da tenere per sempre, una volta raggiunto il risultato.',
+   blocks:[
+     {type:'quick',    reps:12, hold:1, rest:3, name:'Rapide'},
+     {type:'hold',     reps:8,  hold:8, rest:10, name:'Tenute 8 s'},
+     {type:'elevator', reps:4,  steps:4, stepDur:2, topHold:3, rest:18, name:'Ascensore 4 piani'}
+   ]},
+  {id:'l4d', lvl:4, name:'Carico pieno', focus:'Volume',
+   desc:'Volume massimo del programma. Non farla due giorni di fila.',
+   blocks:[
+     {type:'quick',  reps:20, hold:1, rest:3, name:'Rapide'},
+     {type:'hold',   reps:10, hold:10, rest:10, name:'Tenute 10 s'},
+     {type:'submax', reps:3,  hold:30, rest:25, level:.5, name:'Tenute al 50% · 30 s'}
+   ]}
+];
+
+/* ============================================================
+   2. STATO E PERSISTENZA
+   ============================================================ */
+const KEY='marea.v1';
+let mem=null;
+const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[],
+               settings:{sound:true, voice:false, wake:true}};
+
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){ const p=JSON.parse(raw); return Object.assign({},DEFAULT,p,
+      {settings:Object.assign({},DEFAULT.settings,p.settings||{})}); }
+  }catch(e){}
+  return mem ? mem : JSON.parse(JSON.stringify(DEFAULT));
+}
+function save(){
+  mem=state;
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+let state=load();
+
+/* ============================================================
+   3. UTILITÀ
+   ============================================================ */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const pad=n=>String(n).padStart(2,'0');
+const today=()=>new Date().toISOString().slice(0,10);
+function fmtDur(s){ const m=Math.floor(s/60); return m?`${m}′${pad(Math.round(s%60))}″`:`${Math.round(s)}″`; }
+function fmtShort(s){ const m=Math.round(s/60); return m<1?'<1 min':`${m} min`; }
+function fmtHold(s){
+  if(s<60) return Math.round(s)+'s';
+  if(s<3600) return Math.round(s/60)+'m';
+  return (s/3600).toFixed(1).replace('.',',')+'h';
+}
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),2200);
+}
+
+/* ============================================================
+   4. COSTRUZIONE FASI
+   Ogni blocco viene espanso in una lista piatta di fasi:
+   {kind, label, sub, dur, level, isRep}
+   ============================================================ */
+function buildPhases(w){
+  const P=[];
+  P.push({kind:'prep', label:'Preparati', sub:LEVELS[w.lvl-1].pos+' · respira normalmente', dur:8, level:0});
+
+  w.blocks.forEach((b,bi)=>{
+    const sets=b.sets||1;
+    for(let s=0;s<sets;s++){
+      const setTag = sets>1 ? ` · serie ${s+1}/${sets}` : '';
+
+      if(b.type==='pyramid'){
+        b.seq.forEach((h,i)=>{
+          P.push({kind:'c', label:'Contrai', sub:`${h} secondi`, dur:h, level:1, isRep:1, hold:h,
+                  blk:b.name, idx:i+1, tot:b.seq.length});
+          P.push({kind:'r', label:'Rilascia', sub:'Torna a riposo completo', dur:h*(b.restMult||2), level:0,
+                  blk:b.name, idx:i+1, tot:b.seq.length});
+        });
+      }
+      else if(b.type==='elevator'){
+        for(let r=0;r<b.reps;r++){
+          for(let k=1;k<=b.steps;k++)
+            P.push({kind:'c', label:'Sali', sub:`Piano ${k} di ${b.steps}`, dur:b.stepDur,
+                    level:k/b.steps, isRep:k===1?1:0, hold:b.stepDur,
+                    blk:b.name+setTag, idx:r+1, tot:b.reps});
+          if(b.topHold)
+            P.push({kind:'c', label:'Tieni in cima', sub:'Non spingere verso il basso', dur:b.topHold,
+                    level:1, hold:b.topHold, blk:b.name+setTag, idx:r+1, tot:b.reps});
+          for(let k=b.steps-1;k>=1;k--)
+            P.push({kind:'c', label:'Scendi', sub:`Piano ${k} di ${b.steps}`, dur:b.stepDur,
+                    level:k/b.steps, hold:b.stepDur, blk:b.name+setTag, idx:r+1, tot:b.reps});
+          P.push({kind:'r', label:'Rilascia', sub:'Lascia andare tutto', dur:b.rest, level:0,
+                  blk:b.name+setTag, idx:r+1, tot:b.reps});
+        }
+      }
+      else if(b.type==='knack'){
+        for(let r=0;r<b.reps;r++){
+          P.push({kind:'c', label:'Stringi ora', sub:'Prima dello sforzo, non dopo', dur:b.hold,
+                  level:1, isRep:1, hold:b.hold, blk:b.name, idx:r+1, tot:b.reps});
+          P.push({kind:'r', label:'Rilascia', sub:'Respira', dur:b.rest, level:0,
+                  blk:b.name, idx:r+1, tot:b.reps});
+        }
+      }
+      else{ // quick | hold | submax
+        const lv = b.type==='submax' ? (b.level||.5) : 1;
+        const cueC = b.type==='quick' ? 'Stringi' : (b.type==='submax' ? 'Metà forza' : 'Contrai');
+        const subC = b.type==='quick' ? 'Netta e veloce'
+                   : b.type==='submax' ? `Circa il 50% · ${b.hold} secondi`
+                   : `${b.hold} secondi, senza trattenere il respiro`;
+        for(let r=0;r<b.reps;r++){
+          P.push({kind:'c', label:cueC, sub:subC, dur:b.hold, level:lv, isRep:1, hold:b.hold,
+                  blk:b.name+setTag, idx:r+1, tot:b.reps});
+          P.push({kind:'r', label:'Rilascia', sub: b.rest>=8?'Rilascio completo':'Lascia andare',
+                  dur:b.rest, level:0, blk:b.name+setTag, idx:r+1, tot:b.reps});
+        }
+      }
+
+      if(s<sets-1 && b.setRest)
+        P.push({kind:'r', label:'Pausa', sub:'Fine serie, recupera', dur:b.setRest, level:0,
+                blk:b.name, idx:s+1, tot:sets});
+    }
+    if(bi<w.blocks.length-1)
+      P.push({kind:'r', label:'Cambio blocco', sub:w.blocks[bi+1].name, dur:20, level:0,
+              blk:'Transizione', idx:1, tot:1});
+  });
+  return P;
+}
+
+function summarize(w){
+  const P=buildPhases(w);
+  return {
+    phases:P,
+    dur:P.reduce((a,p)=>a+p.dur,0),
+    reps:P.filter(p=>p.isRep).length,
+    hold:P.filter(p=>p.kind==='c').reduce((a,p)=>a+p.dur,0)
+  };
+}
+function blockLabel(b){
+  const sets=b.sets||1, x=sets>1?`${sets}×`:'';
+  if(b.type==='pyramid') return `${b.seq.length} rip · 3→7 s`;
+  if(b.type==='elevator') return `${x}${b.reps} rip · ${b.steps} piani`;
+  if(b.type==='quick')    return `${x}${b.reps} rip · ${b.hold} s`;
+  return `${x}${b.reps} rip · ${b.hold} s tenuta`;
+}
+
+/* ============================================================
+   5. SELEZIONE ALLENAMENTO — mai lo stesso di recente
+   ============================================================ */
+let current=null;
+function pick(force){
+  const pool=WORKOUTS.filter(w=>w.lvl===state.level);
+  const keep=Math.min(state.recent.length, pool.length-1);
+  const recent=state.recent.slice(-keep);
+  let avail=pool.filter(w=>!recent.includes(w.id));
+  if(force && current) avail=avail.filter(w=>w.id!==current.id);
+  if(!avail.length) avail=pool.filter(w=>!current||w.id!==current.id);
+  return avail[Math.floor(Math.random()*avail.length)];
+}
+function renderNext(){
+  current=pick(false);
+  const s=summarize(current), L=LEVELS[current.lvl-1];
+  $('#wkFocus').textContent=current.focus;
+  $('#wkName').textContent=current.name;
+  $('#wkDesc').textContent=current.desc;
+  $('#wkTime').textContent=fmtShort(s.dur);
+  $('#wkReps').textContent=s.reps;
+  $('#wkPos').textContent=L.pos;
+  $('#wkBlocks').innerHTML=current.blocks.map(b=>{
+    const col = b.type==='quick' ? 'var(--release)' : 'var(--effort)';
+    return `<li><i class="dot" style="background:${col}"></i>
+      <span class="nm">${b.name}</span><span class="qt">${blockLabel(b)}</span></li>`;
+  }).join('');
+  $('#lvlChip').textContent='Livello '+state.level+' · '+L.name;
+}
+
+/* ============================================================
+   6. AUDIO E VOCE
+   ============================================================ */
+let ac=null;
+function audio(){
+  if(!state.settings.sound) return null;
+  try{
+    if(!ac) ac=new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==='suspended') ac.resume();
+    return ac;
+  }catch(e){ return null; }
+}
+function beep(freq,dur,vol,type){
+  const c=audio(); if(!c) return;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type||'sine'; o.frequency.value=freq;
+  g.gain.setValueAtTime(0,c.currentTime);
+  g.gain.linearRampToValueAtTime(vol||.16, c.currentTime+.015);
+  g.gain.exponentialRampToValueAtTime(.0001, c.currentTime+dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(); o.stop(c.currentTime+dur+.02);
+}
+const SND={
+  contract(){ beep(523,.16,.18); setTimeout(()=>beep(784,.22,.15),110); },
+  release(){  beep(392,.3,.13); },
+  tick(){     beep(880,.05,.06,'triangle'); },
+  done(){     [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.5,.15),i*130)); }
+};
+function say(txt){
+  if(!state.settings.voice || !('speechSynthesis' in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang='it-IT'; u.rate=1.02; u.pitch=1;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ============================================================
+   7. MOTORE TIMER
+   ============================================================ */
+let R={on:false, phases:[], i:0, t0:0, paused:false, pausedAt:0, raf:0, w:null, wake:null};
+
+async function requestWake(){
+  if(!state.settings.wake || !('wakeLock' in navigator)) return;
+  try{ R.wake=await navigator.wakeLock.request('screen'); }catch(e){}
+}
+function releaseWake(){ try{ R.wake&&R.wake.release(); }catch(e){} R.wake=null; }
+
+function startSession(){
+  R.w=current;
+  R.phases=buildPhases(current);
+  R.i=0; R.paused=false; R.on=true;
+  audio(); // sblocca l'audio sul tocco dell'utente
+  $('#runName').textContent=current.name;
+  buildStrip();
+  $('#run').classList.add('on');
+  $('.dial').parentElement.classList.add('wave-anim');
+  requestWake();
+  enterPhase(0);
+  R.raf=requestAnimationFrame(tick);
+}
+function buildStrip(){
+  const max=90, ph=R.phases;
+  const step=Math.max(1,Math.ceil(ph.length/max));
+  R._stripStep=step;
+  let html='';
+  for(let i=0;i<ph.length;i+=step)
+    html+=`<i class="${ph[i].kind==='c'?'c':'r'}" data-i="${i}"></i>`;
+  $('#strip').innerHTML=html;
+  R._stripEls=[...$('#strip').children];
+}
+function paintStrip(){
+  const st=R._stripStep;
+  R._stripEls.forEach(el=>{
+    const i=+el.dataset.i;
+    el.classList.toggle('done', i<R.i);
+    el.classList.toggle('now', i<=R.i && R.i<i+st);
+  });
+}
+
+function enterPhase(i){
+  const p=R.phases[i];
+  R.i=i; R.t0=performance.now();
+  const eff = p.kind==='c';
+  const col = p.kind==='c' ? 'var(--effort)' : (p.kind==='prep' ? 'var(--gold)' : 'var(--release)');
+  $('#arc').style.stroke=col;
+  $('#waveA').style.fill=col; $('#waveB').style.fill=col;
+  // livello liquido: 0 = vuoto (translate 180), 1 = pieno (translate -8)
+  const y = 180 - p.level*188;
+  $('#liquid').style.transform = `translate(0px,${y}px)`;
+  $('#cue').textContent=p.label;
+  $('#cueSub').textContent=p.sub||'';
+  $('#infoL').textContent=p.blk?`${p.blk}`:'';
+  $('#infoR').textContent=p.tot?`${p.idx}/${p.tot}`:'';
+  paintStrip();
+  if(eff) SND.contract(); else if(p.kind==='r') SND.release();
+  say(p.label);
+  R._spoken=true; R._lastSec=-1;
+}
+
+function tick(){
+  if(!R.on) return;
+  if(!R.paused){
+    const p=R.phases[R.i];
+    const el=(performance.now()-R.t0)/1000;
+    const left=Math.max(0,p.dur-el);
+    const shown=Math.ceil(left-0.001)||0;
+    if(shown!==R._lastSec){
+      $('#count').textContent=shown;
+      if(shown<=3 && shown>0 && p.dur>3) SND.tick();
+      R._lastSec=shown;
+    }
+    const frac=Math.min(1,el/p.dur);
+    $('#arc').setAttribute('stroke-dashoffset', (653.45*frac).toFixed(1));
+    if(el>=p.dur){
+      if(R.i+1<R.phases.length) enterPhase(R.i+1);
+      else return finish();
+    }
+  }
+  R.raf=requestAnimationFrame(tick);
+}
+
+function togglePause(force){
+  R.paused = (force===undefined) ? !R.paused : force;
+  $('#pauseBtn').textContent = R.paused ? '▶' : '❚❚';
+  if(R.paused){ R.pausedAt=performance.now(); $('#cue').textContent='In pausa'; releaseWake(); }
+  else{ R.t0 += performance.now()-R.pausedAt; $('#cue').textContent=R.phases[R.i].label; requestWake(); }
+}
+function skipBlock(){
+  const cur=R.phases[R.i].blk;
+  let i=R.i;
+  while(i<R.phases.length && R.phases[i].blk===cur) i++;
+  if(i>=R.phases.length) finish(); else enterPhase(i);
+}
+function quit(){
+  R.on=false; cancelAnimationFrame(R.raf); releaseWake();
+  try{ speechSynthesis.cancel(); }catch(e){}
+  $('#run').classList.remove('on');
+  $('#pauseBtn').textContent='❚❚';
+}
+
+/* ============================================================
+   8. FINE SESSIONE E STATISTICHE
+   ============================================================ */
+function finish(){
+  const done=R.phases.slice(0,R.i+1);
+  const reps=done.filter(p=>p.isRep).length;
+  const hold=Math.round(done.filter(p=>p.kind==='c').reduce((a,p)=>a+p.dur,0));
+  const dur=Math.round(done.reduce((a,p)=>a+p.dur,0));
+  SND.done(); say('Sessione completata');
+  quit();
+
+  state.history.push({d:today(), id:R.w.id, name:R.w.name, lvl:R.w.lvl, reps, hold, dur});
+  state.recent.push(R.w.id);
+  if(state.recent.length>3) state.recent=state.recent.slice(-3);
+  state.levelSessions++;
+
+  const L=LEVELS[state.level-1];
+  let up=false;
+  if(L.need && state.levelSessions>=L.need && state.level<4){
+    state.level++; state.levelSessions=0; up=true;
+  }
+  save();
+
+  $('#dReps').textContent=reps;
+  $('#dHold').textContent=fmtHold(hold);
+  $('#dStreak').textContent=streak();
+  $('#doneTitle').textContent = up ? 'Livello '+state.level+'.' : 'Fatto.';
+  $('#doneMsg').textContent = up
+    ? `Sei passato a "${LEVELS[state.level-1].name}". ${LEVELS[state.level-1].desc}`
+    : R.w.name+' completato. Il muscolo cresce nel recupero: non esagerare con le sessioni.';
+  $('#done').classList.add('on');
+
+  renderNext(); renderStats();
+}
+
+function streak(){
+  const days=new Set(state.history.map(h=>h.d));
+  if(!days.size) return 0;
+  let n=0, d=new Date();
+  if(!days.has(d.toISOString().slice(0,10))) d.setDate(d.getDate()-1);
+  while(days.has(d.toISOString().slice(0,10))){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+
+function renderStats(){
+  const H=state.history;
+  $('#sStreak').textContent=streak();
+  $('#sTotal').textContent=H.length;
+  $('#sReps').textContent=H.reduce((a,h)=>a+h.reps,0);
+  $('#sHold').textContent=fmtHold(H.reduce((a,h)=>a+h.hold,0));
+
+  const L=LEVELS[state.level-1];
+  $('#lvlName').textContent='Livello '+state.level+' — '+L.name;
+  $('#lvlDesc').textContent=L.desc;
+  if(L.need){
+    const pct=Math.min(100, state.levelSessions/L.need*100);
+    $('#lvlBar').style.width=pct+'%';
+    $('#lvlNext').textContent=`${state.levelSessions} di ${L.need} sessioni · mancano ${L.need-state.levelSessions} al livello ${state.level+1}`;
+  }else{
+    $('#lvlBar').style.width='100%';
+    $('#lvlNext').textContent='Ultimo livello. Da qui si mantiene.';
+  }
+
+  const counts={};
+  H.forEach(h=>counts[h.d]=(counts[h.d]||0)+1);
+  const max=Math.max(1,...Object.values(counts));
+  let bars='', first='';
+  for(let i=13;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const k=d.toISOString().slice(0,10), c=counts[k]||0;
+    if(i===13) first=d.getDate()+'/'+(d.getMonth()+1);
+    bars+=`<div class="${c?'has':''} ${i===0?'today':''}" style="height:${c?Math.max(12,c/max*100):4}%" title="${k}: ${c}"></div>`;
+  }
+  $('#bars').innerHTML=bars;
+  $('#barFrom').textContent=first;
+
+  $('#hist').innerHTML = H.length
+    ? H.slice(-12).reverse().map(h=>{
+        const [y,m,dd]=h.d.split('-');
+        return `<li><span class="d">${dd}/${m}</span><span class="n">${h.name}</span>
+                <span class="d">${h.reps} rip · ${fmtHold(h.hold)}</span></li>`;
+      }).join('')
+    : '<li><span class="n" style="color:var(--muted)">Nessuna sessione ancora. Inizia dalla scheda Sessione.</span></li>';
+}
+
+/* ============================================================
+   9. EVENTI
+   ============================================================ */
+$$('nav button').forEach(b=>b.addEventListener('click',()=>{
+  const t=b.dataset.tab;
+  $$('nav button').forEach(x=>x.setAttribute('aria-selected', x===b));
+  $$('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+t));
+  $('#hdr').textContent = t==='train'?'Marea' : t==='stats'?'Progressi':'Guida';
+  if(t==='stats') renderStats();
+  window.scrollTo(0,0);
+}));
+
+$('#startBtn').addEventListener('click', startSession);
+$('#shuffleBtn').addEventListener('click', ()=>{
+  const prev=current.id; current=pick(true);
+  if(current.id===prev){ toast('Nessun altro allenamento disponibile'); return; }
+  const s=summarize(current), L=LEVELS[current.lvl-1];
+  $('#wkFocus').textContent=current.focus; $('#wkName').textContent=current.name;
+  $('#wkDesc').textContent=current.desc; $('#wkTime').textContent=fmtShort(s.dur);
+  $('#wkReps').textContent=s.reps; $('#wkPos').textContent=L.pos;
+  $('#wkBlocks').innerHTML=current.blocks.map(b=>{
+    const col=b.type==='quick'?'var(--release)':'var(--effort)';
+    return `<li><i class="dot" style="background:${col}"></i><span class="nm">${b.name}</span><span class="qt">${blockLabel(b)}</span></li>`;
+  }).join('');
+});
+$('#pauseBtn').addEventListener('click',()=>togglePause());
+$('#skipBtn').addEventListener('click', skipBlock);
+$('#quitBtn').addEventListener('click',()=>{
+  if(R.i>4 && !confirm('Uscire? La sessione non verrà registrata.')) return;
+  quit();
+});
+$('#doneBtn').addEventListener('click',()=>$('#done').classList.remove('on'));
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden && R.on && !R.paused) togglePause(true);
+});
+
+// impostazioni
+function bindSw(sel,key){
+  const el=$(sel);
+  el.setAttribute('aria-pressed', String(!!state.settings[key]));
+  el.addEventListener('click',()=>{
+    state.settings[key]=!state.settings[key];
+    el.setAttribute('aria-pressed', String(state.settings[key]));
+    save();
+    if(key==='sound'&&state.settings.sound) SND.contract();
+    if(key==='voice'&&state.settings.voice) say('Voce guida attiva');
+  });
+}
+bindSw('#swSound','sound'); bindSw('#swVoice','voice'); bindSw('#swWake','wake');
+
+// dati
+$('#expBtn').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`marea-${today()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+});
+$('#impBtn').addEventListener('click',()=>$('#impFile').click());
+$('#impFile').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const p=JSON.parse(r.result);
+      if(!p || !Array.isArray(p.history)) throw 0;
+      state=Object.assign({},DEFAULT,p,{settings:Object.assign({},DEFAULT.settings,p.settings||{})});
+      save(); renderNext(); renderStats();
+      toast('Dati importati');
+    }catch(err){ toast('File non valido'); }
+  };
+  r.readAsText(f); e.target.value='';
+});
+$('#resetBtn').addEventListener('click',()=>{
+  if(!confirm('Cancellare storico, livello e impostazioni? Non si può annullare.')) return;
+  state=JSON.parse(JSON.stringify(DEFAULT)); save(); renderNext(); renderStats();
+  toast('Dati azzerati');
+});
+
+// service worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+renderNext(); renderStats();
+</script>
+</body>
+</html>
