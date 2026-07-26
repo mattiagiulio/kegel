@@ -81,8 +81,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--release);outline-of
 nav{position:fixed;left:0;right:0;bottom:0;z-index:40;
   background:rgba(22,19,32,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border-top:1px solid var(--line);padding-bottom:var(--safe-b)}
-.nav-in{max-width:460px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
-nav button{padding:13px 0 15px;color:var(--muted);font-size:10px;font-weight:700;
+.nav-in{max-width:460px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+nav button{padding:13px 0 15px;color:var(--muted);font-size:11px;font-weight:700;
   letter-spacing:.08em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:5px}
 nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;
   stroke-linecap:round;stroke-linejoin:round}
@@ -174,6 +174,12 @@ nav button[aria-selected=true]{color:var(--text)}
 .sw[aria-pressed=true]::after{transform:translateX(21px)}
 
 /* ---------- done screen ---------- */
+.fampick{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:var(--surface);
+  border:1px solid var(--line);border-radius:15px;padding:5px;margin-bottom:16px}
+.fampick button{padding:11px 0;border-radius:11px;color:var(--muted);font-size:13.5px;
+  font-weight:700;transition:background .15s,color .15s}
+.fampick button[aria-pressed=true]{background:var(--surface2);color:var(--text)}
+
 .lvlpick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .lvlpick button{padding:14px 0;border-radius:12px;background:var(--surface2);
   font-family:var(--display);font-size:18px;font-weight:800;color:var(--muted);
@@ -211,6 +217,13 @@ nav button[aria-selected=true]{color:var(--text)}
   <main>
     <!-- ============ SESSIONE ============ -->
     <section class="view on" id="v-train">
+      <div class="fampick" id="famPick">
+        <button data-f="kegel" aria-pressed="true">Kegel</button>
+        <button data-f="breath" aria-pressed="false">Respiro</button>
+        <button data-f="relax" aria-pressed="false">Rilascio</button>
+      </div>
+
+      <div class="fam" id="fam-kegel">
       <div class="card">
         <div class="eyebrow" style="margin-bottom:9px">Prossima sessione</div>
         <span class="wk-focus" id="wkFocus"></span>
@@ -228,6 +241,25 @@ nav button[aria-selected=true]{color:var(--text)}
         </div>
       </div>
       <p class="tiny">Da 1 a 3 sessioni al giorno, 5–6 giorni a settimana.<br>Ogni sessione è diversa dalle precedenti.</p>
+      </div>
+
+      <div class="fam" id="fam-breath" style="display:none">
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:9px">Durata sessione</div>
+        <div class="lvlpick" id="brDur">
+          <button data-m="2">2′</button><button data-m="5">5′</button>
+          <button data-m="10">10′</button><button data-m="15">15′</button>
+        </div>
+      </div>
+      <div id="brList"></div>
+      <p class="tiny">Se durante l'esercizio senti capogiro, formicolio marcato o fastidio,<br>fermati e torna al respiro normale.</p>
+    
+      </div>
+
+      <div class="fam" id="fam-relax" style="display:none">
+        <div id="rxList"></div>
+        <p class="tiny">Contrai al 70%, mai al massimo: serve a sentire il contrasto,<br>non a fare forza. Salta i gruppi dove senti dolore.</p>
+      </div>
     </section>
 
     <!-- ============ PROGRESSI ============ -->
@@ -253,8 +285,9 @@ nav button[aria-selected=true]{color:var(--text)}
       </div>
 
       <div class="card" id="brStatBox" style="display:none">
-        <div class="eyebrow" style="margin-bottom:4px">Respirazione</div>
+        <div class="eyebrow" style="margin-bottom:8px">Respiro e rilascio</div>
         <p class="sub" id="brStat" style="margin:0"></p>
+        <p class="sub" id="rxStat" style="margin:8px 0 0"></p>
       </div>
 
       <div class="card">
@@ -283,18 +316,6 @@ nav button[aria-selected=true]{color:var(--text)}
       </div>
     </section>
 
-    <!-- ============ RESPIRO ============ -->
-    <section class="view" id="v-breath">
-      <div class="card">
-        <div class="eyebrow" style="margin-bottom:9px">Durata sessione</div>
-        <div class="lvlpick" id="brDur">
-          <button data-m="2">2′</button><button data-m="5">5′</button>
-          <button data-m="10">10′</button><button data-m="15">15′</button>
-        </div>
-      </div>
-      <div id="brList"></div>
-      <p class="tiny">Se durante l'esercizio senti capogiro, formicolio marcato o fastidio,<br>fermati e torna al respiro normale.</p>
-    </section>
 
     <!-- ============ GUIDA ============ -->
     <section class="view guide" id="v-guide">
@@ -325,6 +346,18 @@ nav button[aria-selected=true]{color:var(--text)}
       </div>
 
       <div class="card">
+        <h3>Le tre famiglie</h3>
+        <p>Nella scheda Sessione scegli in alto fra <b>Kegel</b>, <b>Respiro</b> e <b>Rilascio</b>. Motore identico, protocolli diversi: la vasca si riempie quando c'è tensione o inspirazione, si svuota quando lasci andare.</p>
+
+        <h3>Rilascio — rilassamento progressivo</h3>
+        <p>Metodo Jacobson: contrai un gruppo muscolare, poi lo lasci andare di colpo. Il punto non è la contrazione ma il contrasto — dopo aver stretto per cinque secondi riconosci la tensione residua che prima non notavi, e il muscolo scende sotto il livello di partenza.</p>
+        <ul>
+          <li><b>Contrai al 70%, mai al massimo.</b> Serve a sentire, non a fare forza. Al massimo rischi crampi, soprattutto ai polpacci.</li>
+          <li><b>Il rilascio dura il triplo</b> della tensione. È lì che succede tutto.</li>
+          <li><b>Salta i gruppi dolenti.</b> Collo e mascella con delicatezza: sono le zone dove è più facile esagerare.</li>
+          <li><b>Se hai contratture o un pavimento pelvico già ipertonico,</b> usa "Solo rilascio", che attraversa il corpo senza contrarre niente.</li>
+        </ul>
+
         <h3>La scheda Respiro</h3>
         <p>Otto tecniche, indipendenti dagli esercizi del pavimento pelvico. La vasca si riempie mentre inspiri e si svuota mentre espiri: puoi seguirla senza leggere niente.</p>
         <ul>
@@ -386,8 +419,6 @@ nav button[aria-selected=true]{color:var(--text)}
     <div class="nav-in">
       <button data-tab="train" aria-selected="true">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Sessione</button>
-      <button data-tab="breath" aria-selected="false">
-        <svg viewBox="0 0 24 24"><path d="M12 21c-4 0-7-2.7-7-6.5C5 10 12 3 12 3s7 7 7 11.5c0 3.8-3 6.5-7 6.5Z"/><path d="M12 21v-6"/></svg>Respiro</button>
       <button data-tab="stats" aria-selected="false">
         <svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg>Progressi</button>
       <button data-tab="guide" aria-selected="false">
@@ -668,12 +699,98 @@ function buildBreathPhases(t,o){
   return P;
 }
 
+
+/* ============================================================
+   RILASSAMENTO MUSCOLARE PROGRESSIVO (Jacobson)
+   Si contrae un gruppo al ~70% per pochi secondi, poi si lascia
+   e si resta col contrasto. Il rilascio dura il triplo della
+   tensione: è lì che avviene l'effetto, non nella contrazione.
+   ============================================================ */
+const RX_FULL=[
+  {n:'Piedi',      c:'Arriccia le dita dei piedi verso il basso'},
+  {n:'Caviglie',   c:'Tira le punte verso di te'},
+  {n:'Polpacci',   c:'Spingi le punte in avanti, senza esagerare'},
+  {n:'Cosce',      c:'Stringi i muscoli delle cosce'},
+  {n:'Glutei',     c:'Stringi i glutei'},
+  {n:'Addome',     c:'Contrai la pancia come per proteggerti'},
+  {n:'Petto',      c:'Inspira a fondo e trattieni'},
+  {n:'Schiena',    c:'Avvicina le scapole fra loro'},
+  {n:'Mani',       c:'Chiudi i pugni'},
+  {n:'Avambracci', c:'Piega i polsi verso l\'alto'},
+  {n:'Bicipiti',   c:'Piega le braccia portando i pugni alle spalle'},
+  {n:'Spalle',     c:'Alza le spalle verso le orecchie'},
+  {n:'Collo',      c:'Spingi la nuca indietro, con delicatezza'},
+  {n:'Mascella',   c:'Serra i denti appena, senza stringere forte'},
+  {n:'Occhi',      c:'Chiudi gli occhi con forza'},
+  {n:'Fronte',     c:'Solleva le sopracciglia più che puoi'}
+];
+const RX_SHORT=[
+  {n:'Gambe e piedi', c:'Punta le dita e stringi cosce e polpacci'},
+  {n:'Glutei',        c:'Stringi i glutei'},
+  {n:'Addome',        c:'Contrai la pancia'},
+  {n:'Petto e schiena',c:'Inspira a fondo e avvicina le scapole'},
+  {n:'Mani e braccia', c:'Chiudi i pugni e piega le braccia'},
+  {n:'Spalle',         c:'Alza le spalle verso le orecchie'},
+  {n:'Collo e mascella',c:'Serra appena i denti e irrigidisci il collo, con delicatezza'},
+  {n:'Viso',           c:'Strizza gli occhi e corruga la fronte'}
+];
+const RX_EXPRESS=[
+  {n:'Gambe',  c:'Punta le dita, stringi polpacci e cosce'},
+  {n:'Tronco', c:'Pancia dentra, scapole avvicinate, respiro trattenuto'},
+  {n:'Braccia',c:'Pugni chiusi, braccia piegate, spalle alte'},
+  {n:'Viso',   c:'Occhi strizzati, fronte corrugata, denti appena serrati'}
+];
+const RX_SCAN=[
+  {n:'Piedi e caviglie', s:'Appoggia l\'attenzione qui. Non fare niente.'},
+  {n:'Gambe',            s:'Lascia che il peso scenda verso il basso.'},
+  {n:'Bacino e glutei',  s:'Molla ogni presa che trovi.'},
+  {n:'Addome',           s:'Lascia che si muova col respiro.'},
+  {n:'Petto e schiena',  s:'Senti il torace che si apre e si chiude.'},
+  {n:'Mani e braccia',   s:'Lascia le dita morbide, semiaperte.'},
+  {n:'Spalle e collo',   s:'Lascia che le spalle scendano.'},
+  {n:'Viso',             s:'Sciogli la mascella, la fronte, gli occhi.'}
+];
+
+const RELAX=[
+  {id:'rxshort', name:'Breve', tag:'8 gruppi', groups:RX_SHORT, tense:5, rest:15,
+   desc:'La versione da usare tutti i giorni. Otto gruppi risalendo dai piedi al viso, cinque secondi di tensione e quindici di rilascio.'},
+  {id:'rxfull', name:'Completo', tag:'16 gruppi', groups:RX_FULL, tense:5, rest:15,
+   desc:'Il protocollo classico di Jacobson, gruppo per gruppo. Più lungo, ma è quello che insegna davvero a riconoscere la tensione dove non sapevi di averla.'},
+  {id:'rxexp', name:'Espresso', tag:'4 gruppi', groups:RX_EXPRESS, tense:6, rest:20,
+   desc:'Quattro blocchi, due minuti. Per quando hai poco tempo o lo fai alla scrivania.'},
+  {id:'rxscan', name:'Solo rilascio', tag:'Senza tensione', groups:RX_SCAN, passive:true, rest:16,
+   desc:'Nessuna contrazione: si attraversa il corpo lasciando andare e basta. Da preferire se hai dolori, contratture o un pavimento pelvico già ipertonico.'}
+];
+
+function buildRelaxPhases(t){
+  const P=[{kind:'prep', label:'Preparati',
+            sub: t.passive ? 'Sdraiato, occhi chiusi se ti va'
+                           : 'Sdraiato o seduto · contrai sempre al 70%',
+            dur:8, level:0}];
+  const n=t.groups.length;
+  t.groups.forEach((g,i)=>{
+    if(t.passive){
+      // la vasca si svuota man mano che l'attenzione scende lungo il corpo
+      P.push({kind:'bo', label:g.n, sub:g.s, dur:t.rest, level:1-(i+1)/n, ramp:true,
+              isRep:1, blk:'Rilascio', idx:i+1, tot:n});
+    }else{
+      P.push({kind:'c', label:g.n, sub:g.c, dur:t.tense, level:1, isRep:1,
+              blk:'Tensione e rilascio', idx:i+1, tot:n});
+      P.push({kind:'r', label:'Lascia andare', sub:'Nota la differenza col momento prima',
+              dur:t.rest, level:0, blk:'Tensione e rilascio', idx:i+1, tot:n});
+    }
+  });
+  P.push({kind:'r', label:'Tutto il corpo', sub:'Resta così per qualche respiro',
+          dur:25, level:0, blk:'Chiusura', idx:1, tot:1});
+  return P;
+}
+
 /* ============================================================
    2. STATO E PERSISTENZA
    ============================================================ */
 const KEY='marea.v1';
 let mem=null;
-const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[], breath:[], brDur:5, brWin:4, brRounds:3, lastBackup:null,
+const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[], breath:[], relax:[], family:'kegel', brDur:5, brWin:4, brRounds:3, lastBackup:null,
                settings:{sound:true, voice:false, wake:true, haptic:true, flash:true}};
 
 function load(){
@@ -1068,6 +1185,20 @@ function startBreath(t){
   R.raf=requestAnimationFrame(tick);
 }
 
+function startRelax(t){
+  R.mode='relax'; R.t=t;
+  R.phases=buildRelaxPhases(t);
+  R.i=0; R.paused=false; R.on=true;
+  audio();
+  $('#runName').textContent='Rilascio · '+t.name;
+  buildStrip();
+  $('#run').classList.add('on');
+  $('.dial').parentElement.classList.add('wave-anim');
+  requestWake();
+  enterPhase(0);
+  R.raf=requestAnimationFrame(tick);
+}
+
 function buildStrip(){
   const max=90, ph=R.phases;
   const step=Math.max(1,Math.ceil(ph.length/max));
@@ -1115,6 +1246,22 @@ function enterPhase(i){
   // Un solo segnale forte all'inizio della contrazione: i passaggi interni
   // (rampa → tenuta, i piani dell'ascensore) ricevono un tocco leggero.
   const prev = i>0 ? R.phases[i-1] : null;
+  if(R.mode==='relax'){
+    const dur=Math.round(done.reduce((a,x)=>a+x.dur,0));
+    const groups=done.filter(x=>x.isRep).length;
+    beep(392,.5,.12); setTimeout(()=>beep(523,.7,.1),260);
+    quit();
+    state.relax.push({d:today(), id:R.t.id, name:R.t.name, dur, groups});
+    save();
+    $('#dRepsL').textContent='Gruppi';   $('#dReps').textContent=groups;
+    $('#dHoldL').textContent='Durata';   $('#dHold').textContent=fmtHold(dur);
+    $('#dStreakL').textContent='Sessioni';$('#dStreak').textContent=state.relax.length;
+    $('#doneTitle').textContent='Sciolto.';
+    $('#doneMsg').textContent='Rialzati piano, senza scatti.';
+    $('#done').classList.add('on');
+    renderStats();
+    return;
+  }
   if(R.mode==='breath'){
     if(p.kind==='bi') beep(392,.22,.09);
     else if(p.kind==='bo') beep(294,.3,.08);
@@ -1186,6 +1333,22 @@ function quit(){
    ============================================================ */
 function finish(){
   const done=R.phases.slice(0,R.i+1);
+  if(R.mode==='relax'){
+    const dur=Math.round(done.reduce((a,x)=>a+x.dur,0));
+    const groups=done.filter(x=>x.isRep).length;
+    beep(392,.5,.12); setTimeout(()=>beep(523,.7,.1),260);
+    quit();
+    state.relax.push({d:today(), id:R.t.id, name:R.t.name, dur, groups});
+    save();
+    $('#dRepsL').textContent='Gruppi';   $('#dReps').textContent=groups;
+    $('#dHoldL').textContent='Durata';   $('#dHold').textContent=fmtHold(dur);
+    $('#dStreakL').textContent='Sessioni';$('#dStreak').textContent=state.relax.length;
+    $('#doneTitle').textContent='Sciolto.';
+    $('#doneMsg').textContent='Rialzati piano, senza scatti.';
+    $('#done').classList.add('on');
+    renderStats();
+    return;
+  }
   if(R.mode==='breath'){
     const dur=Math.round(done.reduce((a,x)=>a+x.dur,0)) + (R._retention||0);
     const cycles=done.filter(x=>x.kind==='bi').length;
@@ -1265,17 +1428,24 @@ function renderBackup(){
 }
 
 function renderStats(){
-  const B=state.breath||[];
+  const B=state.breath||[], X=state.relax||[];
   const bx=$('#brStatBox');
   if(bx){
-    bx.style.display = B.length ? 'block' : 'none';
+    bx.style.display = (B.length||X.length) ? 'block' : 'none';
+    const el1=$('#brStat'), el2=$('#rxStat');
     if(B.length){
       const mins=Math.round(B.reduce((a,x)=>a+x.dur,0)/60);
       const ret=Math.max(0,...B.map(x=>x.ret||0));
-      $('#brStat').textContent =
-        `${B.length} session${B.length===1?'e':'i'} · ${mins} minuti totali` +
+      el1.textContent = `Respiro · ${B.length} session${B.length===1?'e':'i'} · ${mins} min` +
         (ret?` · apnea più lunga ${ret}s`:'') + ` · ultima: ${B[B.length-1].name}`;
     }
+    el1.style.display=B.length?'block':'none';
+    if(X.length){
+      const mins=Math.round(X.reduce((a,x)=>a+x.dur,0)/60);
+      el2.textContent = `Rilascio · ${X.length} session${X.length===1?'e':'i'} · ${mins} min` +
+        ` · ultima: ${X[X.length-1].name}`;
+    }
+    el2.style.display=X.length?'block':'none';
   }
   const H=state.history;
   $('#sStreak').textContent=streak();
@@ -1373,6 +1543,45 @@ $('#brList').addEventListener('click',e=>{
   }
 });
 
+/* ---- elenco protocolli di rilascio ------------------------------ */
+function renderRelax(){
+  $('#rxList').innerHTML=RELAX.map(t=>{
+    const n=t.groups.length;
+    const dur=Math.round((buildRelaxPhases(t).reduce((a,x)=>a+x.dur,0))/60*10)/10;
+    return `<div class="card">
+      <span class="wk-focus" style="color:var(--gold);background:rgba(217,178,106,.11)">${t.tag}</span>
+      <h2>${t.name}</h2>
+      <p class="sub" style="margin:6px 0 12px">${t.desc}</p>
+      <div class="wk-meta" style="margin:0">
+        <div><b>${String(dur).replace('.',',')} min</b><span>Durata</span></div>
+        <div><b>${n}</b><span>Gruppi</span></div>
+        <div><b>${t.passive?'—':t.tense+'/'+t.rest+'s'}</b><span>Tensione/rilascio</span></div>
+      </div>
+      <button class="btn rxGo" data-id="${t.id}" style="margin-top:16px">Inizia</button>
+    </div>`;
+  }).join('');
+}
+$('#rxList').addEventListener('click',e=>{
+  const b=e.target.closest('button.rxGo'); if(!b) return;
+  const t=RELAX.find(x=>x.id===b.dataset.id); if(t) startRelax(t);
+});
+
+/* ---- selettore di famiglia -------------------------------------- */
+function setFamily(f){
+  state.family=f; save();
+  $$('#famPick button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.f===f)));
+  ['kegel','breath','relax'].forEach(k=>{
+    const el=document.getElementById('fam-'+k);
+    if(el) el.style.display = k===f ? 'block' : 'none';
+  });
+  if(f==='breath') renderBreath();
+  if(f==='relax') renderRelax();
+  window.scrollTo(0,0);
+}
+$('#famPick').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(b) setFamily(b.dataset.f);
+});
+
 /* ============================================================
    9. EVENTI
    ============================================================ */
@@ -1380,10 +1589,8 @@ $$('nav button').forEach(b=>b.addEventListener('click',()=>{
   const t=b.dataset.tab;
   $$('nav button').forEach(x=>x.setAttribute('aria-selected', x===b));
   $$('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+t));
-  $('#hdr').textContent = t==='train'?'Marea' : t==='breath'?'Respiro'
-                        : t==='stats'?'Progressi':'Guida';
+  $('#hdr').textContent = t==='train'?'Marea' : t==='stats'?'Progressi':'Guida';
   if(t==='stats') renderStats();
-  if(t==='breath') renderBreath();
   window.scrollTo(0,0);
 }));
 
@@ -1491,7 +1698,8 @@ if('serviceWorker' in navigator){
   });
 }
 
-renderNext(); renderStats(); renderBackup(); renderFolder(); renderBreath();
+renderNext(); renderStats(); renderBackup(); renderFolder();
+setFamily(state.family||'kegel');
 </script>
 </body>
 </html>
