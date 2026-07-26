@@ -169,6 +169,12 @@ nav button[aria-selected=true]{color:var(--text)}
 .sw[aria-pressed=true]::after{transform:translateX(21px)}
 
 /* ---------- done screen ---------- */
+.lvlpick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.lvlpick button{padding:14px 0;border-radius:12px;background:var(--surface2);
+  font-family:var(--display);font-size:18px;font-weight:800;color:var(--muted);
+  border:1px solid transparent;transition:all .15s}
+.lvlpick button[aria-pressed=true]{background:var(--gold);color:#161320}
+
 #done{position:fixed;inset:0;z-index:70;background:var(--ink);display:none;
   flex-direction:column;justify-content:center;padding:40px 28px calc(var(--safe-b) + 28px);text-align:center}
 #done.on{display:flex}
@@ -265,6 +271,18 @@ nav button[aria-selected=true]{color:var(--text)}
         <div class="toggle">Segnali sonori <button class="sw" id="swSound" aria-pressed="true" aria-label="Segnali sonori"></button></div>
         <div class="toggle">Voce guida <button class="sw" id="swVoice" aria-pressed="false" aria-label="Voce guida"></button></div>
         <div class="toggle">Schermo sempre acceso <button class="sw" id="swWake" aria-pressed="true" aria-label="Schermo sempre acceso"></button></div>
+        <div style="padding-top:16px">
+          <div class="eyebrow" style="margin-bottom:9px">Livello di partenza</div>
+          <div class="lvlpick" id="lvlPick">
+            <button data-l="1">1</button><button data-l="2">2</button>
+            <button data-l="3">3</button><button data-l="4">4</button>
+          </div>
+          <p class="sub" style="font-size:13px;margin:12px 0 0">
+            <b>Prova prima questo:</b> contrai al massimo e conta quanti secondi reggi senza che la
+            contrazione ceda, senza stringere glutei o addome e senza bloccare il respiro.
+            Fino a 4 s → livello 1. Fino a 6 s → livello 2. Fino a 8 s → livello 3. Oltre → livello 4.
+          </p>
+        </div>
       </div>
 
       <div class="card">
@@ -856,7 +874,7 @@ function finish(){
     : R.w.name+' completato. Il muscolo cresce nel recupero: non esagerare con le sessioni.';
   $('#done').classList.add('on');
 
-  renderNext(); renderStats();
+  renderNext(); renderStats(); paintLvlPick();
 }
 
 function streak(){
@@ -960,6 +978,21 @@ function bindSw(sel,key){
 }
 bindSw('#swSound','sound'); bindSw('#swVoice','voice'); bindSw('#swWake','wake');
 
+// selettore livello: azzera il conteggio verso il livello successivo,
+// lo storico resta intatto
+function paintLvlPick(){
+  $$('#lvlPick button').forEach(b=>
+    b.setAttribute('aria-pressed', String(+b.dataset.l===state.level)));
+}
+$$('#lvlPick button').forEach(b=>b.addEventListener('click',()=>{
+  const n=+b.dataset.l;
+  if(n===state.level) return;
+  state.level=n; state.levelSessions=0; state.recent=[];
+  save(); paintLvlPick(); renderNext(); renderStats();
+  toast('Livello '+n+' — '+LEVELS[n-1].name);
+}));
+paintLvlPick();
+
 // dati
 $('#expBtn').addEventListener('click',()=>{
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
@@ -978,7 +1011,7 @@ $('#impFile').addEventListener('change',e=>{
       const p=JSON.parse(r.result);
       if(!p || !Array.isArray(p.history)) throw 0;
       state=Object.assign({},DEFAULT,p,{settings:Object.assign({},DEFAULT.settings,p.settings||{})});
-      save(); renderNext(); renderStats();
+      save(); renderNext(); renderStats(); paintLvlPick();
       toast('Dati importati');
     }catch(err){ toast('File non valido'); }
   };
@@ -986,7 +1019,7 @@ $('#impFile').addEventListener('change',e=>{
 });
 $('#resetBtn').addEventListener('click',()=>{
   if(!confirm('Cancellare storico, livello e impostazioni? Non si può annullare.')) return;
-  state=JSON.parse(JSON.stringify(DEFAULT)); save(); renderNext(); renderStats();
+  state=JSON.parse(JSON.stringify(DEFAULT)); save(); renderNext(); renderStats(); paintLvlPick();
   toast('Dati azzerati');
 });
 
