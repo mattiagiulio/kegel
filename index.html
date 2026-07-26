@@ -796,8 +796,14 @@ const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[], breath:[], 
 function load(){
   try{
     const raw=localStorage.getItem(KEY);
-    if(raw){ const p=JSON.parse(raw); return Object.assign({},DEFAULT,p,
-      {settings:Object.assign({},DEFAULT.settings,p.settings||{})}); }
+    if(raw){
+      const p=JSON.parse(raw);
+      // copia profonda dei predefiniti: altrimenti gli array assenti nel
+      // salvataggio (relax, breath in chi aggiorna) resterebbero condivisi
+      // con DEFAULT e verrebbero riempiti a sua insaputa
+      const base=JSON.parse(JSON.stringify(DEFAULT));
+      return Object.assign(base, p, {settings:Object.assign(base.settings, p.settings||{})});
+    }
   }catch(e){}
   return mem ? mem : JSON.parse(JSON.stringify(DEFAULT));
 }
@@ -1246,22 +1252,6 @@ function enterPhase(i){
   // Un solo segnale forte all'inizio della contrazione: i passaggi interni
   // (rampa → tenuta, i piani dell'ascensore) ricevono un tocco leggero.
   const prev = i>0 ? R.phases[i-1] : null;
-  if(R.mode==='relax'){
-    const dur=Math.round(done.reduce((a,x)=>a+x.dur,0));
-    const groups=done.filter(x=>x.isRep).length;
-    beep(392,.5,.12); setTimeout(()=>beep(523,.7,.1),260);
-    quit();
-    state.relax.push({d:today(), id:R.t.id, name:R.t.name, dur, groups});
-    save();
-    $('#dRepsL').textContent='Gruppi';   $('#dReps').textContent=groups;
-    $('#dHoldL').textContent='Durata';   $('#dHold').textContent=fmtHold(dur);
-    $('#dStreakL').textContent='Sessioni';$('#dStreak').textContent=state.relax.length;
-    $('#doneTitle').textContent='Sciolto.';
-    $('#doneMsg').textContent='Rialzati piano, senza scatti.';
-    $('#done').classList.add('on');
-    renderStats();
-    return;
-  }
   if(R.mode==='breath'){
     if(p.kind==='bi') beep(392,.22,.09);
     else if(p.kind==='bo') beep(294,.3,.08);
