@@ -105,7 +105,7 @@ nav button[aria-selected=true]{color:var(--text)}
 .arc{fill:none;stroke:var(--effort);stroke-width:5;stroke-linecap:round;
   transition:stroke .5s ease}
 .bowl{fill:#1B1728}
-#liquid{transition:transform .9s cubic-bezier(.4,0,.2,1)}
+#liquid{transition:transform .5s cubic-bezier(.33,0,.2,1)}
 #waveA{fill:var(--effort);opacity:.85;transition:fill .6s ease}
 #waveB{fill:var(--effort);opacity:.35;transition:fill .6s ease}
 .wave-anim #waveA{animation:drift 7s linear infinite}
@@ -275,6 +275,10 @@ nav button[aria-selected=true]{color:var(--text)}
           <li>Il respiro continua: espira mentre contrai, inspira mentre rilasci.</li>
           <li>Non allenarti interrompendo davvero la minzione: è solo un test, e ripetuto può causare problemi.</li>
         </ul>
+
+        <h3>Il secondo di salita</h3>
+        <p>Prima di ogni tenuta trovi un secondo di <b>Sali</b>. Non è tempo perso: il pavimento pelvico impiega circa un secondo ad arrivare alla contrazione massima, e il conteggio della tenuta deve partire da lì. Senza quella rampa una tenuta da 6 secondi ne vale davvero 5.</p>
+        <p>Le contrazioni rapide fanno eccezione e partono di scatto: lì serve proprio la reattività.</p>
 
         <h3>Rilasciare è metà dell'esercizio</h3>
         <p>Il recupero tra una contrazione e l'altra è lungo quanto o il doppio della tenuta. Un muscolo che non torna a riposo completo si affatica e perde forza. Se non riesci a completare l'ultima ripetizione con la stessa qualità della prima, il carico è troppo alto.</p>
@@ -554,7 +558,9 @@ function buildPhases(w){
 
       if(b.type==='pyramid'){
         b.seq.forEach((h,i)=>{
-          P.push({kind:'c', label:'Contrai', sub:`${h} secondi`, dur:h, level:1, isRep:1, hold:h,
+          P.push({kind:'c', label:'Sali', sub:'Porta al massimo', dur:1, level:1, ramp:true,
+                  isRep:1, blk:b.name, idx:i+1, tot:b.seq.length});
+          P.push({kind:'c', label:'Tieni', sub:`${h} secondi`, dur:h, level:1, hold:h,
                   blk:b.name, idx:i+1, tot:b.seq.length});
           P.push({kind:'r', label:'Rilascia', sub:'Torna a riposo completo', dur:h*(b.restMult||2), level:0,
                   blk:b.name, idx:i+1, tot:b.seq.length});
@@ -586,12 +592,18 @@ function buildPhases(w){
       }
       else{ // quick | hold | submax
         const lv = b.type==='submax' ? (b.level||.5) : 1;
-        const cueC = b.type==='quick' ? 'Stringi' : (b.type==='submax' ? 'Metà forza' : 'Contrai');
-        const subC = b.type==='quick' ? 'Netta e veloce'
+        const isQuick = b.type==='quick';
+        const cueC = isQuick ? 'Stringi' : (b.type==='submax' ? 'Tieni a metà' : 'Tieni');
+        const subC = isQuick ? 'Netta e veloce'
                    : b.type==='submax' ? `Circa il 50% · ${b.hold} secondi`
                    : `${b.hold} secondi, senza trattenere il respiro`;
         for(let r=0;r<b.reps;r++){
-          P.push({kind:'c', label:cueC, sub:subC, dur:b.hold, level:lv, isRep:1, hold:b.hold,
+          // Le tenute iniziano con 1 s di salita, così il conteggio parte dal massimo
+          // come nei protocolli clinici. Le rapide no: devono essere esplosive.
+          if(!isQuick)
+            P.push({kind:'c', label:'Sali', sub:'Porta al massimo', dur:1, level:lv, ramp:true,
+                    isRep:1, blk:b.name+setTag, idx:r+1, tot:b.reps});
+          P.push({kind:'c', label:cueC, sub:subC, dur:b.hold, level:lv, isRep:isQuick?1:0, hold:b.hold,
                   blk:b.name+setTag, idx:r+1, tot:b.reps});
           P.push({kind:'r', label:'Rilascia', sub: b.rest>=8?'Rilascio completo':'Lascia andare',
                   dur:b.rest, level:0, blk:b.name+setTag, idx:r+1, tot:b.reps});
@@ -746,15 +758,23 @@ function enterPhase(i){
   $('#waveA').style.fill=col; $('#waveB').style.fill=col;
   // livello liquido: 0 = vuoto (translate 180), 1 = pieno (translate -8)
   const y = 180 - p.level*188;
-  $('#liquid').style.transform = `translate(0px,${y}px)`;
+  const liq=$('#liquid');
+  // La vasca deve muoversi al ritmo del gesto: sale lenta durante la rampa,
+  // scatta sulle rapide, si svuota con calma sul rilascio.
+  liq.style.transitionDuration = p.ramp ? p.dur+'s' : (p.kind==='c' ? '.22s' : '.6s');
+  liq.style.transform = `translate(0px,${y}px)`;
   $('#cue').textContent=p.label;
   $('#cueSub').textContent=p.sub||'';
   $('#infoL').textContent=p.blk?`${p.blk}`:'';
   $('#infoR').textContent=p.tot?`${p.idx}/${p.tot}`:'';
   paintStrip();
-  if(eff) SND.contract(); else if(p.kind==='r') SND.release();
+  // Un solo segnale forte all'inizio della contrazione: i passaggi interni
+  // (rampa → tenuta, i piani dell'ascensore) ricevono un tocco leggero.
+  const prev = i>0 ? R.phases[i-1] : null;
+  if(eff) (!prev || prev.kind!=='c') ? SND.contract() : SND.tick();
+  else if(p.kind==='r' && (!prev || prev.kind!=='r')) SND.release();
   say(p.label);
-  R._spoken=true; R._lastSec=-1;
+  R._ready=false; R._lastSec=-1;
 }
 
 function tick(){
@@ -768,6 +788,12 @@ function tick(){
       $('#count').textContent=shown;
       if(shown<=3 && shown>0 && p.dur>3) SND.tick();
       R._lastSec=shown;
+    }
+    // Preavviso: nell'ultimo secondo di riposo annuncia la contrazione in arrivo.
+    if(!R._ready && p.kind==='r' && p.dur>=3 && left<=1.05 && R.i+1<R.phases.length){
+      R._ready=true;
+      $('#cue').textContent='Pronto…';
+      $('#cueSub').textContent='Inspira';
     }
     const frac=Math.min(1,el/p.dur);
     $('#arc').setAttribute('stroke-dashoffset', (653.45*frac).toFixed(1));
