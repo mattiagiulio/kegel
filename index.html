@@ -22,7 +22,7 @@
   --text:#EDE9F5; --muted:#9C93B8;
   --effort:#E4577E; --effort-dim:#7A2B44;
   --release:#9FD4B4; --release-dim:#3C6152;
-  --gold:#D9B26A;
+  --gold:#D9B26A; --calm:#79A7D3;
   --display:'Bricolage Grotesque',system-ui,sans-serif;
   --body:'Karla',system-ui,-apple-system,sans-serif;
   --safe-b:env(safe-area-inset-bottom,0px);
@@ -81,8 +81,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--release);outline-of
 nav{position:fixed;left:0;right:0;bottom:0;z-index:40;
   background:rgba(22,19,32,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border-top:1px solid var(--line);padding-bottom:var(--safe-b)}
-.nav-in{max-width:460px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr}
-nav button{padding:13px 0 15px;color:var(--muted);font-size:11px;font-weight:700;
+.nav-in{max-width:460px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav button{padding:13px 0 15px;color:var(--muted);font-size:10px;font-weight:700;
   letter-spacing:.08em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:5px}
 nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;
   stroke-linecap:round;stroke-linejoin:round}
@@ -252,9 +252,21 @@ nav button[aria-selected=true]{color:var(--text)}
         <div class="bar-lbl"><span id="barFrom"></span><span>oggi</span></div>
       </div>
 
+      <div class="card" id="brStatBox" style="display:none">
+        <div class="eyebrow" style="margin-bottom:4px">Respirazione</div>
+        <p class="sub" id="brStat" style="margin:0"></p>
+      </div>
+
       <div class="card">
         <div class="eyebrow" style="margin-bottom:4px">Storico</div>
         <ul class="hist" id="hist"></ul>
+      </div>
+
+      <div class="card" id="fsBox" style="display:none">
+        <div class="eyebrow" style="margin-bottom:6px">Cartella collegata</div>
+        <p class="sub" id="fsState" style="font-size:13px;margin:0 0 12px"></p>
+        <button class="btn btn-ghost" id="fsBtn">Scegli cartella</button>
+        <p class="sub" style="font-size:12.5px;margin:12px 0 0">L'app salverà <code>marea-progressi.json</code> qui a ogni sessione, e lo rileggerà da sola se i dati locali sparissero.</p>
       </div>
 
       <div class="card">
@@ -264,9 +276,24 @@ nav button[aria-selected=true]{color:var(--text)}
           <button class="btn btn-ghost" id="impBtn">Importa</button>
         </div>
         <input type="file" id="impFile" accept="application/json" hidden>
+        <p class="sub" id="bkState" style="font-size:13px;margin:14px 0 0"></p>
         <button class="btn btn-ghost" id="resetBtn" style="margin-top:10px;color:var(--effort);border-color:var(--effort-dim)">Azzera tutto</button>
-        <p class="sub" style="font-size:12.5px;margin:12px 0 0">iOS può cancellare i dati salvati se non apri l'app per settimane. Esporta ogni tanto.</p>
+        <p class="sub" style="font-size:12.5px;margin:12px 0 0"><b>Su iPhone:</b> il file si chiama sempre <code>Marea-progressi.json</code>. Al secondo export "Salva su File" si apre già sulla cartella usata l'ultima volta e propone di sostituire il file: stessa cartella, stesso file, due tocchi. L'automazione completa non è possibile perché Safari non espone alcuna API per le cartelle.</p>
+        <p class="sub" style="font-size:12.5px;margin:10px 0 0">Avendo aggiunto Marea alla schermata Home, i dati non scadono per inattività. Restano a rischio solo se il telefono esaurisce la memoria o se cancelli i dati di Safari: per quello serve il file esportato, da tenere su iCloud Drive.</p>
       </div>
+    </section>
+
+    <!-- ============ RESPIRO ============ -->
+    <section class="view" id="v-breath">
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:9px">Durata sessione</div>
+        <div class="lvlpick" id="brDur">
+          <button data-m="2">2′</button><button data-m="5">5′</button>
+          <button data-m="10">10′</button><button data-m="15">15′</button>
+        </div>
+      </div>
+      <div id="brList"></div>
+      <p class="tiny">Se durante l'esercizio senti capogiro, formicolio marcato o fastidio,<br>fermati e torna al respiro normale.</p>
     </section>
 
     <!-- ============ GUIDA ============ -->
@@ -298,6 +325,18 @@ nav button[aria-selected=true]{color:var(--text)}
       </div>
 
       <div class="card">
+        <h3>La scheda Respiro</h3>
+        <p>Otto tecniche, indipendenti dagli esercizi del pavimento pelvico. La vasca si riempie mentre inspiri e si svuota mentre espiri: puoi seguirla senza leggere niente.</p>
+        <ul>
+          <li><b>Serve subito, sei agitato:</b> sospiro fisiologico. Due o tre bastano.</li>
+          <li><b>Devi addormentarti:</b> 4-7-8.</li>
+          <li><b>Vuoi rientrare in controllo prima di qualcosa:</b> box breathing.</li>
+          <li><b>Pratica quotidiana di fondo:</b> coerenza cardiaca, dieci minuti.</li>
+          <li><b>Non sai da dove partire:</b> diaframmatica.</li>
+        </ul>
+        <p>Il principio comune è che l'inspirazione accelera il battito e l'espirazione lo rallenta: ogni tecnica che allunga l'espirazione rispetto all'inspirazione spinge verso la calma. Le trattenute aggiungono concentrazione e rallentano ulteriormente il ritmo.</p>
+        <p><b>Il Wim Hof è l'eccezione:</b> non calma, attiva. È iperventilazione seguita da apnea e va trattato con rispetto — leggi l'avviso sulla sua scheda prima di provarlo.</p>
+
         <h3>Trovare i muscoli giusti</h3>
         <p>Immagina di trattenere l'aria intestinale e contemporaneamente di interrompere il flusso dell'urina. La sensazione è di <b>sollevamento verso l'interno</b>, non di spinta verso il basso.</p>
         <ul>
@@ -347,6 +386,8 @@ nav button[aria-selected=true]{color:var(--text)}
     <div class="nav-in">
       <button data-tab="train" aria-selected="true">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Sessione</button>
+      <button data-tab="breath" aria-selected="false">
+        <svg viewBox="0 0 24 24"><path d="M12 21c-4 0-7-2.7-7-6.5C5 10 12 3 12 3s7 7 7 11.5c0 3.8-3 6.5-7 6.5Z"/><path d="M12 21v-6"/></svg>Respiro</button>
       <button data-tab="stats" aria-selected="false">
         <svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg>Progressi</button>
       <button data-tab="guide" aria-selected="false">
@@ -402,9 +443,9 @@ nav button[aria-selected=true]{color:var(--text)}
   <div class="big" id="doneTitle">Fatto.</div>
   <p class="sub" id="doneMsg"></p>
   <div class="done-stats">
-    <div><b id="dReps">0</b><span>Contrazioni</span></div>
-    <div><b id="dHold">0s</b><span>In tenuta</span></div>
-    <div><b id="dStreak">0</b><span>Giorni di fila</span></div>
+    <div><b id="dReps">0</b><span id="dRepsL">Contrazioni</span></div>
+    <div><b id="dHold">0s</b><span id="dHoldL">In tenuta</span></div>
+    <div><b id="dStreak">0</b><span id="dStreakL">Giorni di fila</span></div>
   </div>
   <button class="btn" id="doneBtn">Chiudi</button>
 </div>
@@ -545,12 +586,94 @@ const WORKOUTS = [
    ]}
 ];
 
+
+/* ============================================================
+   LIBRERIA RESPIRAZIONE
+   cycle: [tipo, secondi, livelloOpzionale]
+   tipi: in (inspira) · hold (trattieni pieno) · out (espira) · holdE (trattieni vuoto)
+   ============================================================ */
+const BREATH=[
+  {id:'box', name:'Box breathing', tag:'Equilibrio', win:[3,4,5,6], defWin:4,
+   desc:'Quattro tempi uguali. Lo standard usato da militari e soccorritori per rientrare in controllo in fretta: la simmetria occupa l\'attenzione e frena il respiro senza forzarlo.',
+   cycle:o=>[['in',o.w],['hold',o.w],['out',o.w],['holdE',o.w]]},
+
+  {id:'478', name:'4-7-8', tag:'Sonno', max:8,
+   desc:'Inspira 4, trattieni 7, espira 8. Divulgata da Andrew Weil: l\'espirazione lunghissima è quella che spinge di più verso il parasimpatico. La più efficace per addormentarsi.',
+   cycle:()=>[['in',4],['hold',7],['out',8]]},
+
+  {id:'coer', name:'Coerenza cardiaca', tag:'HRV',
+   desc:'Circa cinque respiri e mezzo al minuto, il ritmo che massimizza la variabilità cardiaca. Non dà sollievo immediato ma è la più solida sulle sessioni lunghe: dieci minuti al giorno.',
+   cycle:()=>[['in',5.5],['out',5.5]]},
+
+  {id:'exh', name:'Espirazione lunga', tag:'Parasimpatico',
+   desc:'Inspira 4, espira 8. Il principio in forma minima: l\'inspirazione accelera il cuore, l\'espirazione lo rallenta. Allungare la seconda sposta l\'equilibrio verso la calma.',
+   cycle:()=>[['in',4],['out',8]]},
+
+  {id:'sigh', name:'Sospiro fisiologico', tag:'Sollievo rapido', max:5,
+   desc:'Doppia inspirazione dal naso, poi espirazione lunga dalla bocca. È il modo più veloce di abbassare l\'attivazione in tempo reale: ne bastano due o tre, non serve una sessione intera.',
+   cycle:()=>[['in',1.6,.72],['in',1,1],['out',6]]},
+
+  {id:'diaf', name:'Diaframmatica', tag:'Base',
+   desc:'Inspira 4 dal naso gonfiando la pancia, espira 6 senza forzare. La tecnica fondamentale: se le altre ti danno fastidio, parti da qui.',
+   cycle:()=>[['in',4],['out',6]]},
+
+  {id:'nadi', name:'Narici alternate', tag:'Tradizionale',
+   desc:'Nadi Shodhana. Chiudi la narice destra col pollice e inspira dalla sinistra; chiudi la sinistra con l\'anulare ed espira dalla destra; poi inspira da destra e inverti. L\'app scandisce i tempi, le dita le muovi tu.',
+   cycle:()=>[['in',4],['hold',2],['out',4],['in',4],['hold',2],['out',4]]},
+
+  {id:'whm', name:'Wim Hof', tag:'Attivante', type:'whm', rounds:[3,4], defRounds:3, breaths:30,
+   desc:'Trenta respiri pieni, poi espira e resta in apnea finché regge. Poi un respiro profondo trattenuto 15 secondi. Non è una tecnica calmante: è iperventilazione seguita da apnea, e serve ad attivare, non a rilassare.'}
+];
+
+function mkBreath(k,d,lv,sub,idx,tot){
+  const M={
+    'in':   {kind:'bi', label:'Inspira',   level:lv!==undefined?lv:1, ramp:true},
+    'out':  {kind:'bo', label:'Espira',    level:lv!==undefined?lv:0, ramp:true},
+    'hold': {kind:'bh', label:'Trattieni', level:1},
+    'holdE':{kind:'bh', label:'Trattieni', level:0}
+  };
+  return Object.assign({dur:d, sub:sub||'', idx:idx, tot:tot, blk:'Respiro'}, M[k]);
+}
+
+function buildBreathPhases(t,o){
+  const P=[{kind:'prep', label:'Preparati', sub:'Seduto o sdraiato, spalle basse', dur:6, level:0}];
+  if(t.type==='whm'){
+    for(let r=1;r<=o.rounds;r++){
+      for(let b=1;b<=t.breaths;b++){
+        P.push({kind:'bi', label:'Inspira', sub:`${b} di ${t.breaths}`, dur:1.6, level:1, ramp:true,
+                blk:`Round ${r} di ${o.rounds}`, idx:b, tot:t.breaths});
+        P.push({kind:'bo', label:'Lascia andare', sub:'Senza spingere', dur:1.6, level:.18, ramp:true,
+                blk:`Round ${r} di ${o.rounds}`, idx:b, tot:t.breaths});
+      }
+      P.push({kind:'bo', label:'Espira tutto', sub:'Poi resta senza aria', dur:2.5, level:0, ramp:true,
+              blk:`Round ${r} di ${o.rounds}`, idx:1, tot:1});
+      P.push({kind:'open', label:'Apnea', sub:'Tocca il tasto quando senti il bisogno di respirare',
+              dur:0, level:0, blk:`Round ${r} di ${o.rounds}`, idx:1, tot:1});
+      P.push({kind:'bi', label:'Inspira a fondo', sub:'Riempi e trattieni', dur:2.5, level:1, ramp:true,
+              blk:`Round ${r} di ${o.rounds}`, idx:1, tot:1});
+      P.push({kind:'bh', label:'Trattieni', sub:'Quindici secondi', dur:15, level:1,
+              blk:`Round ${r} di ${o.rounds}`, idx:1, tot:1});
+      P.push({kind:'bo', label:'Rilascia', sub:'Respira normalmente', dur:8, level:0, ramp:true,
+              blk:`Round ${r} di ${o.rounds}`, idx:1, tot:1});
+    }
+  }else{
+    const cyc=t.cycle(o);
+    const len=cyc.reduce((a,c)=>a+c[1],0);
+    // alcune tecniche hanno una dose massima: oltre non danno benefici
+    // e le trattenute lunghe possono dare capogiro
+    let n=Math.max(1,Math.round(o.secs/len));
+    if(t.max) n=Math.min(n,t.max);
+    for(let i=0;i<n;i++) cyc.forEach(c=>P.push(mkBreath(c[0],c[1],c[2],'',i+1,n)));
+  }
+  return P;
+}
+
 /* ============================================================
    2. STATO E PERSISTENZA
    ============================================================ */
 const KEY='marea.v1';
 let mem=null;
-const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[],
+const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[], breath:[], brDur:5, brWin:4, brRounds:3, lastBackup:null,
                settings:{sound:true, voice:false, wake:true, haptic:true, flash:true}};
 
 function load(){
@@ -564,8 +687,131 @@ function load(){
 function save(){
   mem=state;
   try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  try{ idbSet(state); }catch(e){}
 }
 let state=load();
+
+/* ---- cartella collegata -----------------------------------------
+   Il pattern richiesto — scegli la cartella una volta, poi l'app vi
+   salva e vi rilegge da sola — esiste ma è solo Chromium desktop.
+   Safari non implementa i picker in nessuna versione, quindi su
+   iPhone questa sezione resta nascosta.                            */
+const HAS_FS = typeof window!=='undefined' && 'showDirectoryPicker' in window;
+const FS_FILE = 'marea-progressi.json';
+let dirHandle=null;
+
+async function fsPick(){
+  try{
+    dirHandle = await window.showDirectoryPicker({mode:'readwrite', id:'marea', startIn:'documents'});
+    await idbRawSet('dir', dirHandle);
+    await fsWrite();
+    renderFolder(); toast('Cartella collegata');
+  }catch(e){}
+}
+async function fsOk(){
+  if(!dirHandle) return false;
+  try{
+    if(await dirHandle.queryPermission({mode:'readwrite'})==='granted') return true;
+    return await dirHandle.requestPermission({mode:'readwrite'})==='granted';
+  }catch(e){ return false; }
+}
+async function fsWrite(){
+  if(!await fsOk()) return false;
+  try{
+    const fh=await dirHandle.getFileHandle(FS_FILE,{create:true});
+    const w=await fh.createWritable();
+    await w.write(JSON.stringify(state,null,2)); await w.close();
+    state.lastBackup={d:today(), n:state.history.length};
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+    renderBackup(); return true;
+  }catch(e){ return false; }
+}
+async function fsRead(){
+  if(!await fsOk()) return null;
+  try{
+    const fh=await dirHandle.getFileHandle(FS_FILE);
+    return JSON.parse(await (await fh.getFile()).text());
+  }catch(e){ return null; }
+}
+function renderFolder(){
+  const box=document.getElementById('fsBox'); if(!box) return;
+  box.style.display = HAS_FS ? 'block' : 'none';
+  const st=document.getElementById('fsState'); if(!st) return;
+  st.textContent = dirHandle
+    ? `Collegata: ${dirHandle.name} · salvataggio automatico a fine sessione`
+    : 'Nessuna cartella collegata.';
+  st.style.color = dirHandle ? 'var(--release)' : 'var(--muted)';
+}
+
+/* ---- rete di protezione dei dati --------------------------------
+   localStorage è la copia di lavoro. IndexedDB ne tiene un duplicato:
+   se la prima sparisce (bug noti di Safari, pulizia parziale) i dati
+   si recuperano da lì. persist() chiede a iOS di non sfrattare nulla
+   quando la memoria si riempie, e va richiesto a ogni avvio.        */
+let _idb=null;
+function idbOpen(){
+  return new Promise(res=>{
+    try{
+      const r=indexedDB.open('marea',1);
+      r.onupgradeneeded=()=>r.result.createObjectStore('kv');
+      r.onsuccess=()=>res(r.result);
+      r.onerror=()=>res(null);
+    }catch(e){ res(null); }
+  });
+}
+async function idbRawSet(k,v){
+  const db=_idb||(_idb=await idbOpen()); if(!db) return;
+  try{ db.transaction('kv','readwrite').objectStore('kv').put(v,k); }catch(e){}
+}
+async function idbRawGet(k){
+  const db=_idb||(_idb=await idbOpen()); if(!db) return null;
+  return new Promise(res=>{
+    try{
+      const r=db.transaction('kv','readonly').objectStore('kv').get(k);
+      r.onsuccess=()=>res(r.result||null); r.onerror=()=>res(null);
+    }catch(e){ res(null); }
+  });
+}
+async function idbSet(v){
+  const db=_idb||(_idb=await idbOpen()); if(!db) return;
+  try{ db.transaction('kv','readwrite').objectStore('kv').put(JSON.stringify(v),'state'); }catch(e){}
+}
+async function idbGet(){
+  const db=_idb||(_idb=await idbOpen()); if(!db) return null;
+  return new Promise(res=>{
+    try{
+      const r=db.transaction('kv','readonly').objectStore('kv').get('state');
+      r.onsuccess=()=>{ try{ res(JSON.parse(r.result)); }catch(e){ res(null); } };
+      r.onerror=()=>res(null);
+    }catch(e){ res(null); }
+  });
+}
+(async()=>{
+  try{ if(navigator.storage && navigator.storage.persist) await navigator.storage.persist(); }catch(e){}
+  if(HAS_FS){
+    dirHandle = await idbRawGet('dir');
+    renderFolder();
+    if(dirHandle && !state.history.length){
+      const f=await fsRead();
+      if(f && Array.isArray(f.history) && f.history.length){
+        state=Object.assign({},DEFAULT,f,
+          {settings:Object.assign({},DEFAULT.settings,f.settings||{})});
+        save(); renderNext(); renderStats(); paintLvlPick(); renderBackup();
+        toast('Progressi ripresi dalla cartella');
+      }
+    }
+  }
+  // recupero: se la copia di lavoro è vuota ma il duplicato ha uno storico, ripristina
+  if(!state.history.length){
+    const bak=await idbGet();
+    if(bak && Array.isArray(bak.history) && bak.history.length){
+      state=Object.assign({},DEFAULT,bak,
+        {settings:Object.assign({},DEFAULT.settings,bak.settings||{})});
+      save(); renderNext(); renderStats(); paintLvlPick();
+      toast('Progressi recuperati dalla copia interna');
+    }
+  }
+})();
 
 /* ============================================================
    3. UTILITÀ
@@ -786,7 +1032,7 @@ const HAP={
 /* ============================================================
    7. MOTORE TIMER
    ============================================================ */
-let R={on:false, phases:[], i:0, t0:0, paused:false, pausedAt:0, raf:0, w:null, wake:null};
+let R={on:false, mode:'kegel', phases:[], i:0, t0:0, paused:false, pausedAt:0, raf:0, w:null, t:null, wake:null};
 
 async function requestWake(){
   if(!state.settings.wake || !('wakeLock' in navigator)) return;
@@ -795,7 +1041,7 @@ async function requestWake(){
 function releaseWake(){ try{ R.wake&&R.wake.release(); }catch(e){} R.wake=null; }
 
 function startSession(){
-  R.w=current;
+  R.mode='kegel'; R.w=current;
   R.phases=buildPhases(current);
   R.i=0; R.paused=false; R.on=true;
   audio(); // sblocca l'audio sul tocco dell'utente
@@ -807,13 +1053,28 @@ function startSession(){
   enterPhase(0);
   R.raf=requestAnimationFrame(tick);
 }
+function startBreath(t){
+  R.mode='breath'; R.t=t; R._retention=0;
+  const o={w:state.brWin, rounds:state.brRounds, secs:state.brDur*60};
+  R.phases=buildBreathPhases(t,o);
+  R.i=0; R.paused=false; R.on=true;
+  audio();
+  $('#runName').textContent=t.name;
+  buildStrip();
+  $('#run').classList.add('on');
+  $('.dial').parentElement.classList.add('wave-anim');
+  requestWake();
+  enterPhase(0);
+  R.raf=requestAnimationFrame(tick);
+}
+
 function buildStrip(){
   const max=90, ph=R.phases;
   const step=Math.max(1,Math.ceil(ph.length/max));
   R._stripStep=step;
   let html='';
   for(let i=0;i<ph.length;i+=step)
-    html+=`<i class="${ph[i].kind==='c'?'c':'r'}" data-i="${i}"></i>`;
+    html+=`<i class="${(ph[i].kind==='c'||ph[i].kind==='bi'||ph[i].kind==='open')?'c':'r'}" data-i="${i}"></i>`;
   $('#strip').innerHTML=html;
   R._stripEls=[...$('#strip').children];
 }
@@ -830,7 +1091,9 @@ function enterPhase(i){
   const p=R.phases[i];
   R.i=i; R.t0=performance.now();
   const eff = p.kind==='c';
-  const col = p.kind==='c' ? 'var(--effort)' : (p.kind==='prep' ? 'var(--gold)' : 'var(--release)');
+  const COL={c:'var(--effort)', r:'var(--release)', prep:'var(--gold)',
+             bi:'var(--calm)', bo:'var(--release)', bh:'var(--gold)', open:'var(--effort)'};
+  const col = COL[p.kind] || 'var(--release)';
   $('#arc').style.stroke=col;
   $('#waveA').style.fill=col; $('#waveB').style.fill=col;
   // livello liquido: 0 = vuoto (translate 180), 1 = pieno (translate -8)
@@ -839,16 +1102,26 @@ function enterPhase(i){
   // La vasca deve muoversi al ritmo del gesto: sale lenta durante la rampa,
   // scatta sulle rapide, si svuota con calma sul rilascio.
   liq.style.transitionDuration = p.ramp ? p.dur+'s' : (p.kind==='c' ? '.22s' : '.6s');
+  // il respiro vuole un movimento uniforme, non un'accelerazione
+  liq.style.transitionTimingFunction = (R.mode==='breath' && p.ramp) ? 'linear' : '';
   liq.style.transform = `translate(0px,${y}px)`;
   $('#cue').textContent=p.label;
   $('#cueSub').textContent=p.sub||'';
   $('#infoL').textContent=p.blk?`${p.blk}`:'';
   $('#infoR').textContent=p.tot?`${p.idx}/${p.tot}`:'';
+  $('#skipBtn').textContent = p.kind==='open' ? 'Ho bisogno di respirare'
+                            : (R.mode==='breath' ? 'Salta' : 'Salta blocco');
   paintStrip();
   // Un solo segnale forte all'inizio della contrazione: i passaggi interni
   // (rampa → tenuta, i piani dell'ascensore) ricevono un tocco leggero.
   const prev = i>0 ? R.phases[i-1] : null;
-  if(eff){
+  if(R.mode==='breath'){
+    if(p.kind==='bi') beep(392,.22,.09);
+    else if(p.kind==='bo') beep(294,.3,.08);
+    else if(p.kind==='bh') beep(494,.1,.05);
+    else if(p.kind==='open'){ beep(220,.4,.11); HAP.end(); }
+    if(p.kind!=='prep') FLASH(col);
+  }else if(eff){
     if(!prev || prev.kind!=='c'){ SND.contract(); HAP.start(); FLASH(col); } else SND.tick();
   }else if(p.kind==='r' && (!prev || prev.kind!=='r')){ SND.release(); HAP.end(); FLASH(col); }
   say(p.label);
@@ -859,6 +1132,12 @@ function tick(){
   if(!R.on) return;
   if(!R.paused){
     const p=R.phases[R.i];
+    if(p.kind==='open'){            // apnea: nessun limite, si conta in salita
+      const up=Math.floor((performance.now()-R.t0)/1000);
+      if(up!==R._lastSec){ $('#count').textContent=up; R._lastSec=up; }
+      $('#arc').setAttribute('stroke-dashoffset','0');
+      R.raf=requestAnimationFrame(tick); return;
+    }
     const el=(performance.now()-R.t0)/1000;
     const left=Math.max(0,p.dur-el);
     const shown=Math.ceil(left-0.001)||0;
@@ -907,6 +1186,23 @@ function quit(){
    ============================================================ */
 function finish(){
   const done=R.phases.slice(0,R.i+1);
+  if(R.mode==='breath'){
+    const dur=Math.round(done.reduce((a,x)=>a+x.dur,0)) + (R._retention||0);
+    const cycles=done.filter(x=>x.kind==='bi').length;
+    beep(392,.5,.12); setTimeout(()=>beep(523,.7,.1),260);
+    quit();
+    state.breath.push({d:today(), id:R.t.id, name:R.t.name, dur, ret:R._retention||0});
+    save();
+    $('#dRepsL').textContent='Respiri'; $('#dReps').textContent=cycles;
+    $('#dHoldL').textContent='Durata';  $('#dHold').textContent=fmtHold(dur);
+    if(R._retention){ $('#dStreakL').textContent='Apnea max'; $('#dStreak').textContent=R._retention+'s'; }
+    else { $('#dStreakL').textContent='Sessioni'; $('#dStreak').textContent=state.breath.length; }
+    $('#doneTitle').textContent='Respirato.';
+    $('#doneMsg').textContent=R.t.name+' · resta fermo qualche secondo prima di rialzarti.';
+    $('#done').classList.add('on');
+    renderStats();
+    return;
+  }
   const reps=done.filter(p=>p.isRep).length;
   const hold=Math.round(done.filter(p=>p.kind==='c').reduce((a,p)=>a+p.dur,0));
   const dur=Math.round(done.reduce((a,p)=>a+p.dur,0));
@@ -925,16 +1221,22 @@ function finish(){
   }
   save();
 
-  $('#dReps').textContent=reps;
-  $('#dHold').textContent=fmtHold(hold);
-  $('#dStreak').textContent=streak();
+  $('#dRepsL').textContent='Contrazioni'; $('#dReps').textContent=reps;
+  $('#dHoldL').textContent='In tenuta';    $('#dHold').textContent=fmtHold(hold);
+  $('#dStreakL').textContent='Giorni di fila'; $('#dStreak').textContent=streak();
   $('#doneTitle').textContent = up ? 'Livello '+state.level+'.' : 'Fatto.';
   $('#doneMsg').textContent = up
     ? `Sei passato a "${LEVELS[state.level-1].name}". ${LEVELS[state.level-1].desc}`
     : R.w.name+' completato. Il muscolo cresce nel recupero: non esagerare con le sessioni.';
+  if(HAS_FS && dirHandle) fsWrite();
+  const sinceBk = state.history.length - (state.lastBackup ? state.lastBackup.n : 0);
+  if(sinceBk>=20){
+    $('#doneMsg').textContent += ' Sono ' + sinceBk +
+      ' sessioni che non esporti: fallo da Progressi → Dati, il file va su iCloud Drive.';
+  }
   $('#done').classList.add('on');
 
-  renderNext(); renderStats(); paintLvlPick();
+  renderNext(); renderStats(); paintLvlPick(); renderBackup();
 }
 
 function streak(){
@@ -946,7 +1248,35 @@ function streak(){
   return n;
 }
 
+function renderBackup(){
+  const el=$('#bkState'); if(!el) return;
+  const b=state.lastBackup, n=state.history.length;
+  if(!n){ el.textContent='Nessun dato da esportare per ora.'; el.style.color='var(--muted)'; return; }
+  if(!b){
+    el.textContent=`Mai esportato · ${n} session${n===1?'e':'i'} solo sul telefono.`;
+    el.style.color='var(--gold)'; return;
+  }
+  const gap=n-b.n;
+  const [y,m,d]=b.d.split('-');
+  el.textContent = gap
+    ? `Ultimo backup ${d}/${m} · ${gap} session${gap===1?'e':'i'} non ancora salvate nel file.`
+    : `Ultimo backup ${d}/${m} · tutto salvato.`;
+  el.style.color = gap>=15 ? 'var(--gold)' : 'var(--muted)';
+}
+
 function renderStats(){
+  const B=state.breath||[];
+  const bx=$('#brStatBox');
+  if(bx){
+    bx.style.display = B.length ? 'block' : 'none';
+    if(B.length){
+      const mins=Math.round(B.reduce((a,x)=>a+x.dur,0)/60);
+      const ret=Math.max(0,...B.map(x=>x.ret||0));
+      $('#brStat').textContent =
+        `${B.length} session${B.length===1?'e':'i'} · ${mins} minuti totali` +
+        (ret?` · apnea più lunga ${ret}s`:'') + ` · ultima: ${B[B.length-1].name}`;
+    }
+  }
   const H=state.history;
   $('#sStreak').textContent=streak();
   $('#sTotal').textContent=H.length;
@@ -987,6 +1317,62 @@ function renderStats(){
     : '<li><span class="n" style="color:var(--muted)">Nessuna sessione ancora. Inizia dalla scheda Sessione.</span></li>';
 }
 
+/* ---- elenco tecniche di respirazione ---------------------------- */
+function ratioOf(t){
+  if(t.type==='whm') return `${t.breaths} respiri · apnea libera · 15 s`;
+  return t.cycle({w:state.brWin}).map(c=>String(c[1]).replace('.',',')).join(' · ')+' s';
+}
+function renderBreath(){
+  $$('#brDur button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.m===state.brDur)));
+  $('#brList').innerHTML=BREATH.map(t=>{
+    const pick = t.win
+      ? `<div class="eyebrow" style="margin:16px 0 8px">Finestra</div>
+         <div class="lvlpick" data-win="1">${t.win.map(w=>
+           `<button data-w="${w}" aria-pressed="${w===state.brWin}">${w}s</button>`).join('')}</div>`
+      : t.rounds
+      ? `<div class="eyebrow" style="margin:16px 0 8px">Round</div>
+         <div class="lvlpick" data-rounds="1" style="grid-template-columns:repeat(2,1fr)">${t.rounds.map(r=>
+           `<button data-r="${r}" aria-pressed="${r===state.brRounds}">${r}</button>`).join('')}</div>`
+      : '';
+    const warn = t.type==='whm'
+      ? `<div class="warn" style="margin:16px 0 0"><p><b>Mai in acqua o vicino all'acqua</b> — vasca, piscina, mare. L'apnea dopo iperventilazione può far perdere coscienza senza preavviso, ed è così che avvengono gli annegamenti. Mai in piedi, alla guida o in movimento: solo seduto o sdraiato. Da evitare in gravidanza, con epilessia, problemi cardiaci, ipertensione non controllata o storia di svenimenti. Formicolio e capogiro leggero sono attesi; se diventano intensi, fermati.</p></div>`
+      : '';
+    return `<div class="card">
+      <span class="wk-focus" style="color:var(--calm);background:rgba(121,167,211,.11)">${t.tag}</span>
+      <h2>${t.name}</h2>
+      <p class="sub" style="margin:6px 0 12px">${t.desc}</p>
+      <div style="font-family:var(--display);font-size:19px;font-weight:800;
+                  font-variant-numeric:tabular-nums;color:var(--calm)">${ratioOf(t)}</div>
+      ${t.max?`<p class="sub" style="font-size:12.5px;margin:8px 0 0">Massimo ${t.max} cicli a sessione: oltre non aggiunge nulla e le trattenute lunghe possono dare capogiro.</p>`:''}
+      ${pick}${warn}
+      <button class="btn brGo" data-id="${t.id}"
+              style="margin-top:16px;background:${t.type==='whm'?'var(--surface2)':'var(--calm)'};
+                     ${t.type==='whm'?'border:1px solid var(--gold);color:var(--gold)':''}">Inizia</button>
+    </div>`;
+  }).join('');
+}
+
+// delega: durata, finestra, round, avvio
+$('#brDur').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  state.brDur=+b.dataset.m; save(); renderBreath();
+});
+$('#brList').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.w){ state.brWin=+b.dataset.w; save(); renderBreath(); return; }
+  if(b.dataset.r){ state.brRounds=+b.dataset.r; save(); renderBreath(); return; }
+  if(b.dataset.id){
+    const t=BREATH.find(x=>x.id===b.dataset.id); if(!t) return;
+    if(t.type==='whm' && !confirm(
+      'Wim Hof — conferma prima di iniziare.\n\n'+
+      '• NON sei in acqua né vicino all\'acqua\n'+
+      '• Sei seduto o sdraiato, non in piedi né alla guida\n'+
+      '• Non sei in gravidanza e non hai epilessia, problemi cardiaci o ipertensione non controllata\n\n'+
+      'L\'apnea dopo iperventilazione può far svenire senza preavviso.')) return;
+    startBreath(t);
+  }
+});
+
 /* ============================================================
    9. EVENTI
    ============================================================ */
@@ -994,8 +1380,10 @@ $$('nav button').forEach(b=>b.addEventListener('click',()=>{
   const t=b.dataset.tab;
   $$('nav button').forEach(x=>x.setAttribute('aria-selected', x===b));
   $$('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+t));
-  $('#hdr').textContent = t==='train'?'Marea' : t==='stats'?'Progressi':'Guida';
+  $('#hdr').textContent = t==='train'?'Marea' : t==='breath'?'Respiro'
+                        : t==='stats'?'Progressi':'Guida';
   if(t==='stats') renderStats();
+  if(t==='breath') renderBreath();
   window.scrollTo(0,0);
 }));
 
@@ -1013,7 +1401,15 @@ $('#shuffleBtn').addEventListener('click', ()=>{
   }).join('');
 });
 $('#pauseBtn').addEventListener('click',()=>togglePause());
-$('#skipBtn').addEventListener('click', skipBlock);
+$('#skipBtn').addEventListener('click',()=>{
+  const p=R.on && R.phases[R.i];
+  if(p && p.kind==='open'){
+    R._retention=Math.max(R._retention||0, Math.floor((performance.now()-R.t0)/1000));
+    if(R.i+1<R.phases.length) enterPhase(R.i+1); else finish();
+    return;
+  }
+  skipBlock();
+});
 $('#quitBtn').addEventListener('click',()=>{
   if(R.i>4 && !confirm('Uscire? La sessione non verrà registrata.')) return;
   quit();
@@ -1060,11 +1456,14 @@ $('#expBtn').addEventListener('click',()=>{
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download=`marea-${today()}.json`;
+  a.download='Marea-progressi.json';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  state.lastBackup={d:today(), n:state.history.length};
+  save(); renderBackup();
 });
 $('#impBtn').addEventListener('click',()=>$('#impFile').click());
+if(HAS_FS) $('#fsBtn').addEventListener('click', fsPick);
 $('#impFile').addEventListener('change',e=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader();
@@ -1092,7 +1491,7 @@ if('serviceWorker' in navigator){
   });
 }
 
-renderNext(); renderStats();
+renderNext(); renderStats(); renderBackup(); renderFolder(); renderBreath();
 </script>
 </body>
 </html>

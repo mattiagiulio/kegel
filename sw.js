@@ -1,4 +1,4 @@
-const CACHE = 'marea-v5';
+const CACHE = 'marea-v8';
 const CORE = [
   './',
   './index.html',
