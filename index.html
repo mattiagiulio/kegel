@@ -270,6 +270,7 @@ nav button[aria-selected=true]{color:var(--text)}
         <div class="eyebrow" style="margin-bottom:10px">Impostazioni</div>
         <div class="toggle">Segnali sonori <button class="sw" id="swSound" aria-pressed="true" aria-label="Segnali sonori"></button></div>
         <div class="toggle">Voce guida <button class="sw" id="swVoice" aria-pressed="false" aria-label="Voce guida"></button></div>
+        <div class="toggle">Vibrazione <button class="sw" id="swHaptic" aria-pressed="true" aria-label="Vibrazione"></button></div>
         <div class="toggle">Schermo sempre acceso <button class="sw" id="swWake" aria-pressed="true" aria-label="Schermo sempre acceso"></button></div>
         <div style="padding-top:16px">
           <div class="eyebrow" style="margin-bottom:9px">Livello di partenza</div>
@@ -318,6 +319,10 @@ nav button[aria-selected=true]{color:var(--text)}
           <li><b>Sub-massimali:</b> circa metà della forza tenuta a lungo, per la resistenza posturale.</li>
           <li><b>Pre-contrazione:</b> stringi <i>prima</i> dello sforzo, non dopo.</li>
         </ul>
+
+        <h3>Vibrazione</h3>
+        <p>Due colpi brevi all'inizio della contrazione, uno lungo al rilascio, uno prolungato a fine sessione. Serve soprattutto col telefono in silenzioso, che su iPhone zittisce anche i suoni dell'app.</p>
+        <p>Su iPhone la vibrazione da pagina web non è prevista da Apple: qui è ottenuta sfruttando l'aptica di sistema, quindi l'intensità è fissa e il colpo "lungo" è in realtà una raffica ravvicinata. Richiede iOS 18 o successivo e potrebbe smettere di funzionare con un aggiornamento di sistema. Su Android è vibrazione vera, con durate esatte.</p>
 
         <div class="warn">
           <p>Questa app è uno strumento di allenamento, non una diagnosi. Rivolgiti a un medico o a un fisioterapista specializzato in riabilitazione del pavimento pelvico se hai dolore durante o dopo gli esercizi, se i sintomi peggiorano, se non riesci a percepire la contrazione, o in caso di gravidanza, post parto, post chirurgia prostatica. Un pavimento pelvico troppo contratto dà gli stessi sintomi di uno debole e richiede il trattamento opposto: in quel caso allenarsi di più peggiora le cose.</p>
@@ -389,6 +394,13 @@ nav button[aria-selected=true]{color:var(--text)}
   </div>
   <button class="btn" id="doneBtn">Chiudi</button>
 </div>
+
+<!-- iOS non espone API di vibrazione: si sfrutta l'aptica di sistema
+     che iOS 18+ produce quando si commuta uno switch. Elemento nascosto. -->
+<label id="hapEl" aria-hidden="true"
+       style="position:fixed;opacity:0;pointer-events:none;width:1px;height:1px;overflow:hidden;left:-9999px">
+  <input type="checkbox" switch tabindex="-1">
+</label>
 
 <div class="toast" id="toast"></div>
 
@@ -525,7 +537,7 @@ const WORKOUTS = [
 const KEY='marea.v1';
 let mem=null;
 const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[],
-               settings:{sound:true, voice:false, wake:true}};
+               settings:{sound:true, voice:false, wake:true, haptic:true}};
 
 function load(){
   try{
@@ -724,6 +736,28 @@ function say(txt){
   }catch(e){}
 }
 
+/* ---- vibrazione -------------------------------------------------
+   Android espone navigator.vibrate e accetta pattern con durate reali.
+   iOS non ha alcuna API: l'unico appiglio è l'aptica che il sistema
+   emette commutando uno <input type="checkbox" switch> (iOS 18+).
+   Lì la singola pulsazione ha durata fissa, quindi il "lungo" va
+   ricostruito con una raffica ravvicinata.                          */
+const HAS_VIBRATE = typeof navigator!=='undefined' && 'vibrate' in navigator;
+const hapEl=()=>document.getElementById('hapEl');
+const HAP={
+  _burst(n,gap){
+    for(let i=0;i<n;i++) setTimeout(()=>{ try{ hapEl().click(); }catch(e){} }, i*gap);
+  },
+  fire(pattern, n, gap){
+    if(!state.settings.haptic) return;
+    if(HAS_VIBRATE){ try{ navigator.vibrate(pattern); }catch(e){} }
+    else this._burst(n, gap);
+  },
+  start(){ this.fire([45,75,45], 2, 100); },   // due colpi secchi
+  end(){   this.fire([220], 6, 55); },         // uno lungo
+  done(){  this.fire([90,70,90,70,400], 12, 55); }
+};
+
 /* ============================================================
    7. MOTORE TIMER
    ============================================================ */
@@ -789,8 +823,9 @@ function enterPhase(i){
   // Un solo segnale forte all'inizio della contrazione: i passaggi interni
   // (rampa → tenuta, i piani dell'ascensore) ricevono un tocco leggero.
   const prev = i>0 ? R.phases[i-1] : null;
-  if(eff) (!prev || prev.kind!=='c') ? SND.contract() : SND.tick();
-  else if(p.kind==='r' && (!prev || prev.kind!=='r')) SND.release();
+  if(eff){
+    if(!prev || prev.kind!=='c'){ SND.contract(); HAP.start(); } else SND.tick();
+  }else if(p.kind==='r' && (!prev || prev.kind!=='r')){ SND.release(); HAP.end(); }
   say(p.label);
   R._ready=false; R._lastSec=-1;
 }
@@ -850,7 +885,7 @@ function finish(){
   const reps=done.filter(p=>p.isRep).length;
   const hold=Math.round(done.filter(p=>p.kind==='c').reduce((a,p)=>a+p.dur,0));
   const dur=Math.round(done.reduce((a,p)=>a+p.dur,0));
-  SND.done(); say('Sessione completata');
+  SND.done(); HAP.done(); say('Sessione completata');
   quit();
 
   state.history.push({d:today(), id:R.w.id, name:R.w.name, lvl:R.w.lvl, reps, hold, dur});
@@ -974,9 +1009,11 @@ function bindSw(sel,key){
     save();
     if(key==='sound'&&state.settings.sound) SND.contract();
     if(key==='voice'&&state.settings.voice) say('Voce guida attiva');
+    if(key==='haptic'&&state.settings.haptic) HAP.start();
   });
 }
 bindSw('#swSound','sound'); bindSw('#swVoice','voice'); bindSw('#swWake','wake');
+bindSw('#swHaptic','haptic');
 
 // selettore livello: azzera il conteggio verso il livello successivo,
 // lo storico resta intatto
