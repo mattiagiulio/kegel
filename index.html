@@ -98,6 +98,11 @@ nav button[aria-selected=true]{color:var(--text)}
 .icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);flex:none;
   display:grid;place-items:center;color:var(--muted);font-size:17px}
 
+#flash{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:5;
+  background:radial-gradient(ellipse at center,transparent 38%,var(--fc,var(--effort)) 135%)}
+#flash.go{animation:flashPulse .6s ease-out}
+@keyframes flashPulse{0%{opacity:0}16%{opacity:.6}100%{opacity:0}}
+
 .dial-wrap{flex:1;display:grid;place-items:center;position:relative;margin:8px 0}
 .dial{position:relative;width:min(78vw,320px);aspect-ratio:1}
 .dial svg{width:100%;height:100%;display:block}
@@ -270,9 +275,15 @@ nav button[aria-selected=true]{color:var(--text)}
         <div class="eyebrow" style="margin-bottom:10px">Impostazioni</div>
         <div class="toggle">Segnali sonori <button class="sw" id="swSound" aria-pressed="true" aria-label="Segnali sonori"></button></div>
         <div class="toggle">Voce guida <button class="sw" id="swVoice" aria-pressed="false" aria-label="Voce guida"></button></div>
+        <div class="toggle">Alone luminoso <button class="sw" id="swFlash" aria-pressed="true" aria-label="Alone luminoso"></button></div>
         <div class="toggle">Vibrazione <button class="sw" id="swHaptic" aria-pressed="true" aria-label="Vibrazione"></button></div>
         <div class="toggle">Schermo sempre acceso <button class="sw" id="swWake" aria-pressed="true" aria-label="Schermo sempre acceso"></button></div>
         <div style="padding-top:16px">
+          <p class="sub" style="font-size:12.5px;margin:0 0 18px">
+            Col telefono in silenzioso iOS blocca anche l'audio dell'app, e da iOS 26.5 Apple
+            ha chiuso l'unico modo che avevano le pagine web di far vibrare l'iPhone. In quel caso
+            restano l'alone luminoso, oppure gli auricolari: con le cuffie collegate il suono esce comunque.
+          </p>
           <div class="eyebrow" style="margin-bottom:9px">Livello di partenza</div>
           <div class="lvlpick" id="lvlPick">
             <button data-l="1">1</button><button data-l="2">2</button>
@@ -322,7 +333,8 @@ nav button[aria-selected=true]{color:var(--text)}
 
         <h3>Vibrazione</h3>
         <p>Due colpi brevi all'inizio della contrazione, uno lungo al rilascio, uno prolungato a fine sessione. Serve soprattutto col telefono in silenzioso, che su iPhone zittisce anche i suoni dell'app.</p>
-        <p>Su iPhone la vibrazione da pagina web non è prevista da Apple: qui è ottenuta sfruttando l'aptica di sistema, quindi l'intensità è fissa e il colpo "lungo" è in realtà una raffica ravvicinata. Richiede iOS 18 o successivo e potrebbe smettere di funzionare con un aggiornamento di sistema. Su Android è vibrazione vera, con durate esatte.</p>
+        <p>Su Android è vibrazione vera, con durate esatte. <b>Su iPhone non funziona più:</b> Apple non ha mai esposto un'API di vibrazione al web, e in iOS 26.5 ha chiuso anche l'espediente che le pagine usavano per aggirarla. Sotto la 26.5 l'interruttore ha ancora effetto.</p>
+        <p>Col telefono muto restano quindi l'<b>alone luminoso</b> ai bordi dello schermo, che si coglie con la coda dell'occhio senza fissare il display, e gli <b>auricolari</b>: con le cuffie collegate l'audio esce comunque, silenzioso o no.</p>
 
         <div class="warn">
           <p>Questa app è uno strumento di allenamento, non una diagnosi. Rivolgiti a un medico o a un fisioterapista specializzato in riabilitazione del pavimento pelvico se hai dolore durante o dopo gli esercizi, se i sintomi peggiorano, se non riesci a percepire la contrazione, o in caso di gravidanza, post parto, post chirurgia prostatica. Un pavimento pelvico troppo contratto dà gli stessi sintomi di uno debole e richiede il trattamento opposto: in quel caso allenarsi di più peggiora le cose.</p>
@@ -350,6 +362,8 @@ nav button[aria-selected=true]{color:var(--text)}
     <div class="nm" id="runName"></div>
     <button class="icon-btn" id="pauseBtn" aria-label="Pausa">❚❚</button>
   </div>
+
+  <div id="flash"></div>
 
   <div class="dial-wrap">
     <div class="dial">
@@ -537,7 +551,7 @@ const WORKOUTS = [
 const KEY='marea.v1';
 let mem=null;
 const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[],
-               settings:{sound:true, voice:false, wake:true, haptic:true}};
+               settings:{sound:true, voice:false, wake:true, haptic:true, flash:true}};
 
 function load(){
   try{
@@ -736,6 +750,17 @@ function say(txt){
   }catch(e){}
 }
 
+/* ---- segnale visivo -------------------------------------------
+   Su iPhone in silenzioso non esce audio e dalla 26.5 non esiste
+   più modo di vibrare da web: l'alone colorato sui bordi è l'unico
+   segnale che resta percepibile senza fissare lo schermo.          */
+function FLASH(color){
+  if(!state.settings.flash) return;
+  const f=document.getElementById('flash'); if(!f) return;
+  f.style.setProperty('--fc', color);
+  f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+}
+
 /* ---- vibrazione -------------------------------------------------
    Android espone navigator.vibrate e accetta pattern con durate reali.
    iOS non ha alcuna API: l'unico appiglio è l'aptica che il sistema
@@ -824,8 +849,8 @@ function enterPhase(i){
   // (rampa → tenuta, i piani dell'ascensore) ricevono un tocco leggero.
   const prev = i>0 ? R.phases[i-1] : null;
   if(eff){
-    if(!prev || prev.kind!=='c'){ SND.contract(); HAP.start(); } else SND.tick();
-  }else if(p.kind==='r' && (!prev || prev.kind!=='r')){ SND.release(); HAP.end(); }
+    if(!prev || prev.kind!=='c'){ SND.contract(); HAP.start(); FLASH(col); } else SND.tick();
+  }else if(p.kind==='r' && (!prev || prev.kind!=='r')){ SND.release(); HAP.end(); FLASH(col); }
   say(p.label);
   R._ready=false; R._lastSec=-1;
 }
@@ -1013,7 +1038,7 @@ function bindSw(sel,key){
   });
 }
 bindSw('#swSound','sound'); bindSw('#swVoice','voice'); bindSw('#swWake','wake');
-bindSw('#swHaptic','haptic');
+bindSw('#swHaptic','haptic'); bindSw('#swFlash','flash');
 
 // selettore livello: azzera il conteggio verso il livello successivo,
 // lo storico resta intatto
