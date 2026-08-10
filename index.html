@@ -103,7 +103,7 @@ nav button[aria-selected=true]{color:var(--text)}
 #flash.go{animation:flashPulse .6s ease-out}
 @keyframes flashPulse{0%{opacity:0}16%{opacity:.6}100%{opacity:0}}
 
-.dial-wrap{flex:1;display:grid;place-items:center;position:relative;margin:8px 0}
+.dial-wrap{flex:1;display:grid;place-items:center;position:relative;margin:8px 0;gap:4px}
 .dial{position:relative;width:min(78vw,320px);aspect-ratio:1}
 .dial svg{width:100%;height:100%;display:block}
 .track{fill:none;stroke:var(--surface2);stroke-width:5}
@@ -261,6 +261,45 @@ nav button[aria-selected=true]{color:var(--text)}
 .ch-banner .t b{display:block;font-family:var(--display);font-size:15px;font-weight:800}
 .ch-banner .t span{font-size:12.5px;color:var(--muted)}
 .ch-banner .go{color:var(--gold);font-size:19px;flex:none}
+
+
+/* ---------- ILLUSTRAZIONI ANIMATE NEL RUNNER ---------- */
+.illo{width:min(64vw,250px);height:clamp(78px,14.5vh,128px);position:relative;margin-bottom:2px}
+.illo svg{width:100%;height:100%;display:none}
+.illo svg.on{display:block}
+.dial-wrap.with-illo .dial{width:min(62vw,252px)}
+
+/* pavimento pelvico */
+#illoK .bone{fill:none;stroke:var(--muted);stroke-width:6;stroke-linecap:round;opacity:.42}
+#illoK .org{fill:none;stroke:var(--muted);stroke-width:2;opacity:.5}
+#illoK .orgL{fill:none;stroke:var(--muted);stroke-width:4.5;stroke-linecap:round;opacity:.36}
+#illoK .orgT{fill:none;stroke:var(--muted);stroke-width:8;stroke-linecap:round;opacity:.18}
+#illoK .slingF{fill:var(--ic,var(--effort));opacity:.16}
+#illoK .slingS{fill:none;stroke:var(--ic,var(--effort));stroke-width:6.5;stroke-linecap:round}
+#pfSling{transition:transform .5s cubic-bezier(.33,0,.2,1)}
+#pfOrg{transition:transform .5s cubic-bezier(.33,0,.2,1)}
+#pfArrow path{fill:none;stroke:var(--ic,var(--effort));stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+#pfArrow{transition:opacity .4s ease}
+
+/* respiro */
+#illoB .face{fill:var(--muted);fill-opacity:.08;stroke:var(--muted);stroke-width:2.2;stroke-linejoin:round}
+#illoB .eye{fill:var(--muted);opacity:.55}
+#illoB .lip{fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;opacity:.5}
+#illoB .chest{fill:var(--release);fill-opacity:.10;stroke:var(--release);stroke-width:2.2;stroke-linecap:round}
+#brChest{transition:transform 1s cubic-bezier(.4,0,.4,1)}
+#illoB .flow{opacity:0;transition:opacity .35s ease}
+#illoB .flow.on{opacity:1}
+#illoB .flow path{fill:none;stroke-linecap:round}
+#illoB .flow.on path{animation:airFlow 1.15s linear infinite}
+#airIn path{stroke:var(--gold)}
+#airOut path{stroke:var(--release)}
+@keyframes airFlow{to{stroke-dashoffset:-28}}
+
+/* figura degli esercizi */
+#illoS line, #illoS circle{stroke-linecap:round}
+#illoS .ground{stroke:var(--muted);stroke-width:1.4;opacity:.28}
+.figmini{width:26px;height:26px;flex:none;margin-right:2px}
 
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
@@ -547,7 +586,7 @@ nav button[aria-selected=true]{color:var(--text)}
         <p>Col telefono muto restano quindi l'<b>alone luminoso</b> ai bordi dello schermo, che si coglie con la coda dell'occhio senza fissare il display, e gli <b>auricolari</b>: con le cuffie collegate l'audio esce comunque, silenzioso o no.</p>
 
         <p class="sub" style="font-size:12.5px;margin:22px 0 0;text-align:center;
-             font-variant-numeric:tabular-nums">Marea · versione <b id="verNum">12</b></p>
+             font-variant-numeric:tabular-nums">Marea · versione <b id="verNum">13</b></p>
 
         <div class="warn">
           <p>Questa app è uno strumento di allenamento, non una diagnosi. Rivolgiti a un medico o a un fisioterapista specializzato in riabilitazione del pavimento pelvico se hai dolore durante o dopo gli esercizi, se i sintomi peggiorano, se non riesci a percepire la contrazione, o in caso di gravidanza, post parto, post chirurgia prostatica. Un pavimento pelvico troppo contratto dà gli stessi sintomi di uno debole e richiede il trattamento opposto: in quel caso allenarsi di più peggiora le cose.</p>
@@ -581,6 +620,44 @@ nav button[aria-selected=true]{color:var(--text)}
   <div id="flash"></div>
 
   <div class="dial-wrap">
+
+    <div class="illo" id="illo">
+
+      <svg id="illoK" viewBox="0 0 152 120" aria-hidden="true">
+        <path class="bone" d="M36,54 C26,62 27,78 38,83 C46,86 52,81 51,73"/>
+        <path class="bone" d="M124,26 C136,42 136,68 125,82 C121,88 115,89 111,87"/>
+        <g id="pfOrg">
+          <ellipse class="org" cx="66" cy="50" rx="21" ry="16"/>
+          <path class="orgL" d="M66,66 L66,80"/>
+          <path class="orgT" d="M106,22 C102,40 99,58 98,76"/>
+        </g>
+        <g id="pfSling">
+          <path class="slingF" d="M40,80 C58,106 98,106 112,82 C98,98 58,98 40,80 Z"/>
+          <path class="slingS" d="M40,80 C58,106 98,106 112,82"/>
+        </g>
+        <g id="pfArrow"><path d="M76,100 L76,86 M71,91 L76,86 L81,91"/></g>
+      </svg>
+
+      <svg id="illoB" viewBox="0 0 160 120" aria-hidden="true">
+        <path class="face" d="M78,22 C94,22 104,34 104,46 L104,50 L114,60 C116,62 115,65 112,65 L104,66
+                               L104,72 C104,75 101,77 97,77 L92,77 L92,84 C92,90 87,94 80,94
+                               L62,94 C54,94 48,88 48,80 L48,52 C48,34 60,22 78,22 Z"/>
+        <circle class="eye" cx="88" cy="46" r="2.4"/>
+        <path class="lip" d="M92,72 L102,72"/>
+        <g id="brChest"><path class="chest" d="M46,94 C46,110 96,110 96,94"/></g>
+        <g class="flow" id="airIn">
+          <path d="M152,50 C138,50 128,54 118,58" stroke-width="3.2" stroke-dasharray="5 9"/>
+          <path d="M152,40 C140,42 130,48 120,54" stroke-width="2.2" stroke-dasharray="4 10" opacity=".55"/>
+        </g>
+        <g class="flow" id="airOut">
+          <path d="M104,72 C120,74 136,78 154,84" stroke-width="3.2" stroke-dasharray="5 9"/>
+          <path d="M104,76 C118,82 132,88 150,96" stroke-width="2.2" stroke-dasharray="4 10" opacity=".55"/>
+        </g>
+      </svg>
+
+      <svg id="illoS" viewBox="0 0 128 120" aria-hidden="true"></svg>
+    </div>
+
     <div class="dial">
       <svg viewBox="0 0 240 240" aria-hidden="true">
         <circle class="track" cx="120" cy="120" r="104"/>
@@ -1307,7 +1384,7 @@ async function requestWake(){
 function releaseWake(){ try{ R.wake&&R.wake.release(); }catch(e){} R.wake=null; }
 
 function startSession(){
-  R.mode='kegel'; R.w=current;
+  R.mode='kegel'; R.w=current; setIllo('kegel');
   R.phases=buildPhases(current);
   R.i=0; R.paused=false; R.on=true;
   audio(); // sblocca l'audio sul tocco dell'utente
@@ -1320,7 +1397,7 @@ function startSession(){
   R.raf=requestAnimationFrame(tick);
 }
 function startBreath(t){
-  R.mode='breath'; R.t=t; R._retention=0;
+  R.mode='breath'; R.t=t; R._retention=0; setIllo('breath');
   const o={w:state.brWin, rounds:state.brRounds, secs:state.brDur*60};
   R.phases=buildBreathPhases(t,o);
   R.i=0; R.paused=false; R.on=true;
@@ -1335,7 +1412,7 @@ function startBreath(t){
 }
 
 function startRelax(t){
-  R.mode='relax'; R.t=t;
+  R.mode='relax'; R.t=t; setIllo('none');
   R.phases=buildRelaxPhases(t);
   R.i=0; R.paused=false; R.on=true;
   audio();
@@ -1386,6 +1463,7 @@ function enterPhase(i){
   // il respiro vuole un movimento uniforme, non un'accelerazione
   liq.style.transitionTimingFunction = (R.mode==='breath' && p.ramp) ? 'linear' : '';
   liq.style.transform = `translate(0px,${y}px)`;
+  illoPhase(p, col);
   $('#cue').textContent=p.label;
   $('#cueSub').textContent=p.sub||'';
   $('#infoL').textContent=p.blk?`${p.blk}`:'';
@@ -1415,6 +1493,7 @@ function tick(){
   if(!R.on) return;
   if(!R.paused){
     const p=R.phases[R.i];
+    if(R.mode==='str') figTick();
     if(p.kind==='open' || p.kind==='set'){  // apnea e serie a ripetizioni: si conta in salita
       const up=Math.floor((performance.now()-R.t0)/1000);
       if(up!==R._lastSec){ $('#count').textContent=up; R._lastSec=up; }
@@ -2335,7 +2414,7 @@ function renderStr(){
         <div><b>${w.ex.length}</b><span>Esercizi</span></div>
       </div>
       <ul class="blocks" style="margin-top:14px">${w.ex.map(ex=>
-        `<li><i class="dot" style="background:${ex.time?'var(--release)':'var(--effort)'}"></i>
+        `<li><span style="color:${ex.time?'var(--release)':'var(--effort)'};display:flex">${figMini(strName(ex))}</span>
          <span class="nm">${strName(ex)}</span>
          <span class="qt">${w.circuit?'':ex.sets+'\u00d7'}${ex.time?ex.time[strDi()]+'s':ex.reps[strDi()]}</span></li>`).join('')}</ul>
       <button class="btn strGo" data-id="${w.id}" style="margin-top:16px">Inizia</button>
@@ -2351,7 +2430,7 @@ $$('#strDiff button').forEach(b=>b.addEventListener('click',()=>{
 }));
 
 function startStr(w){
-  R.mode='str'; R.t=w; R._sets=0; R._st=performance.now();
+  R.mode='str'; R.t=w; R._sets=0; R._st=performance.now(); setIllo('str');
   R.phases=buildStrPhases(w);
   R.i=0; R.paused=false; R.on=true;
   audio();
@@ -2363,6 +2442,160 @@ function startStr(w){
   enterPhase(0);
   R.raf=requestAnimationFrame(tick);
 }
+
+
+/* ============================================================
+   12. ILLUSTRAZIONI ANIMATE
+   Tre disegni, uno per famiglia. Kegel e respiro seguono la
+   stessa transizione CSS del liquido, cosi' il gesto sullo
+   schermo e quello nel corpo restano sincronizzati. La figura
+   degli esercizi interpola due pose e detta anche il ritmo.
+   ============================================================ */
+
+/* ---- pose: testa, collo, anca, ginocchio, caviglia, gomito, mano ---- */
+const FIG_P={
+ squat: [[52,20],[52,36],[52,64],[52,86],[52,106],[60,50],[60,62],
+         [58,42],[56,56],[48,82],[68,88],[52,106],[62,66],[64,72]],
+ pushup:[[26,70],[38,73],[64,79],[86,88],[100,98],[38,88],[38,102],
+         [26,86],[38,88],[64,90],[86,95],[100,100],[30,98],[38,104]],
+ press: [[50,24],[50,40],[50,68],[50,88],[50,106],[62,48],[58,36],
+         [50,24],[50,40],[50,68],[50,88],[50,106],[62,26],[58,12]],
+ row:   [[30,46],[42,52],[70,60],[74,84],[76,106],[46,72],[46,88],
+         [30,46],[42,52],[70,60],[74,84],[76,106],[56,64],[44,56]],
+ hinge: [[50,20],[50,36],[50,64],[50,86],[50,106],[56,50],[56,66],
+         [26,44],[38,50],[66,60],[66,84],[66,106],[42,70],[44,86]],
+ pull:  [[50,26],[50,42],[50,70],[50,88],[50,106],[62,26],[66,10],
+         [50,26],[50,42],[50,70],[50,88],[50,106],[66,46],[58,54]],
+ plank: [[26,72],[38,74],[64,80],[86,88],[100,98],[38,86],[38,100],
+         [26,74],[38,76],[64,82],[86,90],[100,98],[38,88],[38,101]],
+ hollow:[[30,86],[42,88],[70,90],[84,76],[96,66],[34,76],[26,66],
+         [30,90],[42,92],[70,94],[88,92],[104,92],[34,82],[26,74]],
+ bridge:[[24,88],[36,90],[64,92],[80,80],[84,106],[32,100],[28,106],
+         [24,88],[36,88],[64,74],[80,70],[84,106],[32,100],[28,106]],
+ lunge: [[50,20],[50,36],[50,64],[50,86],[50,106],[56,50],[56,66],
+         [50,32],[50,48],[50,74],[72,88],[78,106],[56,62],[56,78]],
+ jack:  [[50,20],[50,36],[50,66],[54,88],[56,106],[58,46],[64,58],
+         [50,20],[50,36],[50,66],[64,88],[74,106],[60,28],[66,14]],
+ quad:  [[24,64],[36,68],[70,68],[84,86],[84,104],[36,86],[36,104],
+         [28,78],[38,74],[70,58],[84,86],[84,104],[36,86],[36,104]],
+ stand: [[50,22],[50,38],[50,66],[50,86],[50,106],[58,52],[60,68],
+         [50,26],[50,42],[50,70],[50,88],[50,106],[56,56],[58,72]]
+};
+// arti lontani espliciti dove servono davvero due gambe distinte
+const FIG_FAR={
+ lunge:[[50,86],[50,106],[56,50],[56,66],  [34,94],[26,106],[56,62],[56,78]],
+ jack: [[46,88],[44,106],[42,46],[36,58],  [36,88],[26,106],[40,28],[34,14]],
+ quad: [[80,86],[80,104],[40,86],[40,104], [80,86],[80,104],[40,86],[40,104]]
+};
+const FIG_MAP=[
+  [/bulgar|affondo|lunge/i,'lunge'], [/piegament/i,'pushup'],
+  [/swing|stacco|good morning|hinge|anca/i,'hinge'], [/press|halo|clean/i,'press'],
+  [/rematore/i,'row'], [/pulldown|face pull|dislocazion|trazion/i,'pull'],
+  [/plank/i,'plank'], [/hollow|dead bug/i,'hollow'], [/ponte/i,'bridge'],
+  [/squat/i,'squat'], [/jack|circonduzion/i,'jack'], [/cat-camel|camel/i,'quad']
+];
+function figKey(name){
+  for(const m of FIG_MAP) if(m[0].test(name||'')) return m[1];
+  return 'stand';
+}
+function figSkeleton(){
+  // 4 arti lontani, 5 segmenti vicini, testa, terreno
+  let h='';
+  for(let i=0;i<4;i++) h+=`<line class="far" stroke-width="5" opacity=".42"/>`;
+  h+=`<line class="near" stroke-width="7"/>`;
+  for(let i=0;i<4;i++) h+=`<line class="near" stroke-width="5.5"/>`;
+  h+=`<circle class="head" r="8.5"/><line class="ground" x1="10" y1="111" x2="118" y2="111"/>`;
+  return h;
+}
+function figDraw(svg, key, t, col){
+  if(!svg) return;
+  if(!svg.firstChild) svg.innerHTML=figSkeleton();
+  const p=FIG_P[key]||FIG_P.stand;
+  const L=(i)=>[p[i][0]+(p[i+7][0]-p[i][0])*t, p[i][1]+(p[i+7][1]-p[i][1])*t];
+  const H=L(0),N=L(1),Hp=L(2),K=L(3),A=L(4),E=L(5),W=L(6);
+  const f=FIG_FAR[key];
+  let K2,A2,E2,W2;
+  if(f){
+    const g=(i)=>[f[i][0]+(f[i+4][0]-f[i][0])*t, f[i][1]+(f[i+4][1]-f[i][1])*t];
+    K2=g(0); A2=g(1); E2=g(2); W2=g(3);
+  } else {
+    K2=[K[0]+5,K[1]]; A2=[A[0]+5,A[1]]; E2=[E[0]+5,E[1]]; W2=[W[0]+5,W[1]];
+  }
+  const seg=[[Hp,K2],[K2,A2],[N,E2],[E2,W2],[N,Hp],[Hp,K],[K,A],[N,E],[E,W]];
+  const lines=svg.querySelectorAll('line.far, line.near');
+  seg.forEach((s,i)=>{
+    const el=lines[i]; if(!el) return;
+    el.setAttribute('x1',s[0][0].toFixed(1)); el.setAttribute('y1',s[0][1].toFixed(1));
+    el.setAttribute('x2',s[1][0].toFixed(1)); el.setAttribute('y2',s[1][1].toFixed(1));
+    if(col) el.setAttribute('stroke',col);
+  });
+  const hd=svg.querySelector('circle.head');
+  hd.setAttribute('cx',H[0].toFixed(1)); hd.setAttribute('cy',H[1].toFixed(1));
+  if(col) hd.setAttribute('fill',col);
+}
+// figurina statica per gli elenchi
+function figMini(name){
+  const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.setAttribute('viewBox','0 0 128 120'); s.setAttribute('class','figmini');
+  figDraw(s, figKey(name), .45, 'currentColor');
+  const g=s.querySelector('.ground'); if(g) g.remove();
+  return s.outerHTML;
+}
+
+/* ---- collegamento col motore ---------------------------------- */
+const ILLO={k:null,b:null,s:null,wrap:null,box:null};
+function illoInit(){
+  ILLO.box=$('#illo'); ILLO.wrap=document.querySelector('.dial-wrap');
+  ILLO.k=$('#illoK'); ILLO.b=$('#illoB'); ILLO.s=$('#illoS');
+}
+function setIllo(kind){
+  if(!ILLO.box) illoInit();
+  if(!ILLO.box) return;
+  const on = kind==='kegel'||kind==='breath'||kind==='str';
+  ILLO.box.style.display = on ? 'block' : 'none';
+  ILLO.wrap.classList.toggle('with-illo', on);
+  ILLO.k.classList.toggle('on', kind==='kegel');
+  ILLO.b.classList.toggle('on', kind==='breath');
+  ILLO.s.classList.toggle('on', kind==='str');
+  if(kind==='str') figDraw(ILLO.s, R._fig||'stand', 0, 'var(--effort)');
+}
+// chiamata a ogni cambio di fase: allinea disegno, colore e durata
+function illoPhase(p, col, dur){
+  if(!ILLO.box) illoInit();
+  if(!ILLO.box) return;
+  ILLO.box.style.setProperty('--ic', col);
+
+  if(R.mode==='kegel'){
+    const lift=Math.max(0,Math.min(1,p.level||0));
+    const sl=$('#pfSling'), og=$('#pfOrg'), ar=$('#pfArrow');
+    const d = p.ramp ? p.dur+'s' : (p.kind==='c' ? '.22s' : '.6s');
+    sl.style.transitionDuration=d; og.style.transitionDuration=d;
+    sl.style.transform=`translate(0px,${(-10*lift).toFixed(1)}px) translate(76px,80px) `+
+                       `scale(1,${(1-1.55*lift).toFixed(3)}) translate(-76px,-80px)`;
+    og.style.transform=`translate(0px,${(-4.5*lift).toFixed(1)}px)`;
+    ar.style.opacity=(0.18+0.72*lift).toFixed(2);
+  }
+  else if(R.mode==='breath'){
+    const ch=$('#brChest');
+    ch.style.transitionDuration=(p.dur||1)+'s';
+    const cs=(1+0.18*(p.level||0)).toFixed(3);
+    ch.style.transform=`translate(70px,100px) scale(${cs},${cs}) translate(-70px,-100px)`;
+    $('#airIn').classList.toggle('on', p.kind==='bi');
+    $('#airOut').classList.toggle('on', p.kind==='bo');
+  }
+  else if(R.mode==='str'){
+    R._fig = figKey(p.kind==='r' ? (p.sub||'') : (p.label||''));
+    R._figRun = (p.kind==='set'||p.kind==='wt');
+    figDraw(ILLO.s, R._fig, 0, col);
+  }
+}
+// battito della figura: due secondi e mezzo per ripetizione, fa anche da metronomo
+function figTick(){
+  if(!R._figRun || !ILLO.s) return;
+  const t=(1-Math.cos((performance.now()-R.t0)/2500*2*Math.PI))/2;
+  figDraw(ILLO.s, R._fig||'stand', t);
+}
+illoInit();
 
 renderNext(); renderStats(); renderBackup(); renderFolder(); renderCycle(); renderStr();
 setFamily(state.family||'kegel');
