@@ -81,7 +81,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--release);outline-of
 nav{position:fixed;left:0;right:0;bottom:0;z-index:40;
   background:rgba(22,19,32,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border-top:1px solid var(--line);padding-bottom:var(--safe-b)}
-.nav-in{max-width:460px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+.nav-in{max-width:460px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
 nav button{padding:13px 0 15px;color:var(--muted);font-size:11px;font-weight:700;
   letter-spacing:.08em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:5px}
 nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;
@@ -174,9 +174,9 @@ nav button[aria-selected=true]{color:var(--text)}
 .sw[aria-pressed=true]::after{transform:translateX(21px)}
 
 /* ---------- done screen ---------- */
-.fampick{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:var(--surface);
+.fampick{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--surface);
   border:1px solid var(--line);border-radius:15px;padding:5px;margin-bottom:16px}
-.fampick button{padding:11px 0;border-radius:11px;color:var(--muted);font-size:13.5px;
+.fampick button{padding:11px 0;border-radius:11px;color:var(--muted);font-size:12.5px;
   font-weight:700;transition:background .15s,color .15s}
 .fampick button[aria-pressed=true]{background:var(--surface2);color:var(--text)}
 
@@ -201,6 +201,67 @@ nav button[aria-selected=true]{color:var(--text)}
 .view{display:none}.view.on{display:block}
 .tiny{font-size:12px;color:var(--muted);text-align:center;margin-top:22px;line-height:1.6}
 
+
+/* ---------- CICLO: la sfida dei 28 giorni ---------- */
+.ch-hero{position:relative;overflow:hidden;text-align:center;margin-bottom:14px;
+  background:radial-gradient(125% 95% at 50% -12%, #322A50 0%, var(--surface) 60%);
+  border:1px solid var(--line);border-radius:24px;padding:18px 20px 20px}
+.ch-dial{width:230px;height:230px;margin:0 auto;display:block}
+.ch-dial .seg{stroke-linecap:round;fill:none}
+.ch-dial .seg.on{stroke:var(--gold)}
+.ch-dial .seg.off{stroke:var(--line)}
+.ch-dial .seg.now{stroke:var(--gold);animation:chPulse 2.4s ease-in-out infinite}
+@keyframes chPulse{0%,100%{opacity:.35}50%{opacity:1}}
+.ch-day{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.03em;
+  line-height:1;margin-top:-8px}
+.ch-day small{font-family:var(--body);font-weight:700;font-size:13px;color:var(--muted);
+  letter-spacing:.02em;margin-left:4px}
+.ch-sub{font-size:13px;color:var(--muted);margin:7px 0 0}
+.ch-chips{display:flex;gap:7px;justify-content:center;margin-top:13px;flex-wrap:wrap}
+.ch-chip{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted)}
+.ch-chip.gold{color:var(--gold);border-color:rgba(217,178,106,.35)}
+
+/* settimane e griglia dei giorni */
+.ch-wk{display:flex;align-items:center;gap:10px;margin:18px 2px 9px}
+.ch-wk b{font-family:var(--body);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;white-space:nowrap}
+.ch-wk i{flex:1;height:1px;background:var(--line)}
+.ch-wk span{font-size:12px;color:var(--muted);white-space:nowrap}
+.ch-wk.live b{color:var(--gold)}
+.ch-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.cd{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0 7px;
+  border-radius:14px;background:var(--surface2);border:1px solid transparent;
+  color:var(--muted);font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;
+  transition:transform .12s,border-color .18s}
+.cd svg{width:25px;height:25px;display:block}
+.cd:active{transform:scale(.93)}
+.cd.lock{opacity:.4}
+.cd.done{border-color:rgba(217,178,106,.3);color:var(--text)}
+.cd.now{border-color:var(--gold);background:rgba(217,178,106,.13);color:var(--gold);
+  box-shadow:0 0 14px rgba(217,178,106,.18)}
+.cd[aria-pressed=true]{border-color:var(--text)}
+
+/* scheda del giorno selezionato */
+.ch-parts{list-style:none;margin:14px 0 0;padding:0}
+.ch-parts li{display:flex;align-items:center;gap:11px;padding:11px 0;
+  border-bottom:1px solid var(--line)}
+.ch-parts li:last-child{border-bottom:0}
+.ch-parts .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.ch-parts .nm{flex:1;font-size:14.5px;font-weight:500;color:var(--text)}
+.ch-parts .qt{font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ch-locked{font-size:13px;color:var(--muted);text-align:center;padding:14px 0 2px}
+
+/* richiamo nella scheda Sessione */
+.ch-banner{display:flex;align-items:center;gap:13px;width:100%;text-align:left;
+  background:linear-gradient(100deg,#2C2547,var(--surface));border:1px solid var(--line);
+  border-radius:18px;padding:13px 15px;margin-bottom:13px;color:var(--text)}
+.ch-banner svg{width:34px;height:34px;flex:none}
+.ch-banner .t{flex:1;min-width:0}
+.ch-banner .t b{display:block;font-family:var(--display);font-size:15px;font-weight:800}
+.ch-banner .t span{font-size:12.5px;color:var(--muted)}
+.ch-banner .go{color:var(--gold);font-size:19px;flex:none}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
 }
@@ -217,10 +278,12 @@ nav button[aria-selected=true]{color:var(--text)}
   <main>
     <!-- ============ SESSIONE ============ -->
     <section class="view on" id="v-train">
+      <button class="ch-banner" id="chBanner" style="display:none"></button>
       <div class="fampick" id="famPick">
         <button data-f="kegel" aria-pressed="true">Kegel</button>
         <button data-f="breath" aria-pressed="false">Respiro</button>
         <button data-f="relax" aria-pressed="false">Rilascio</button>
+        <button data-f="str" aria-pressed="false">Forza</button>
       </div>
 
       <div class="fam" id="fam-kegel">
@@ -260,6 +323,80 @@ nav button[aria-selected=true]{color:var(--text)}
         <div id="rxList"></div>
         <p class="tiny">Contrai al 70%, mai al massimo: serve a sentire il contrasto,<br>non a fare forza. Salta i gruppi dove senti dolore.</p>
       </div>
+
+      <div class="fam" id="fam-str" style="display:none">
+        <div class="card" style="padding:16px 18px">
+          <div class="eyebrow" style="margin-bottom:9px">Difficolt&agrave;</div>
+          <div class="lvlpick" id="strDiff" style="grid-template-columns:repeat(3,1fr)">
+            <button data-d="base">Base</button><button data-d="std">Standard</button><button data-d="plus">Avanzato</button>
+          </div>
+          <p class="sub" style="font-size:13px;margin:12px 0 0" id="strDiffDesc"></p>
+          <p class="sub" style="font-size:13px;margin:10px 0 0">
+            <b>Come si sale:</b> quando chiudi tutte le serie in cima al range per due sedute di fila,
+            passi alla difficolt&agrave; successiva. Non aggiungere serie: aggiungi qualit&agrave;.
+          </p>
+        </div>
+        <div id="strList"></div>
+        <p class="tiny">
+          Tre sedute a settimana, mai due giorni di fila sullo stesso schema.<br>
+          Sullo swing: se senti la schiena invece dei glutei, fermati e rivedi il movimento a vuoto.<br>
+          Dolore acuto, articolare o improvviso = fine seduta, non &egrave; fatica.
+        </p>
+      </div>
+
+    </section>
+
+
+    <!-- ============ CICLO ============ -->
+    <section class="view" id="v-cycle">
+
+      <!-- prima dell'avvio -->
+      <div id="chIntro">
+        <div class="ch-hero">
+          <svg class="ch-dial" id="chIntroDial" viewBox="0 0 200 200" aria-hidden="true"></svg>
+          <div class="ch-day" style="font-size:26px">Ciclo di Marea</div>
+          <p class="ch-sub">Ventotto giorni, da luna nuova a luna piena.<br>Ogni giorno che chiudi accende uno spicchio.</p>
+        </div>
+
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:9px">Come funziona</div>
+          <p class="sub" style="margin:0 0 12px">
+            Un percorso già scritto: ogni giorno ha il suo allenamento, e il successivo si apre
+            quando chiudi quello prima. Quattro settimane che salgono di livello — tenute più
+            lunghe, poi in piedi, poi il gesto che serve davvero. Il settimo giorno di ogni
+            settimana è riposo attivo: solo respiro e rilascio, perché il muscolo cresce lì.
+          </p>
+          <div class="eyebrow" style="margin-bottom:9px">Da che livello parti</div>
+          <div class="lvlpick" id="chLvl">
+            <button data-l="1">1</button><button data-l="2">2</button>
+            <button data-l="3">3</button><button data-l="4">4</button>
+          </div>
+          <p class="sub" style="font-size:13px;margin:12px 0 0" id="chLvlDesc"></p>
+          <div class="btn-row" style="margin-top:16px">
+            <button class="btn" id="chStartBtn">Apri il ciclo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ciclo in corso -->
+      <div id="chMain" style="display:none">
+        <div class="ch-hero">
+          <svg class="ch-dial" id="chDial" viewBox="0 0 200 200" aria-hidden="true"></svg>
+          <div class="ch-day" id="chDayNum">Giorno 1<small>di 28</small></div>
+          <p class="ch-sub" id="chPhase"></p>
+          <div class="ch-chips" id="chChips"></div>
+        </div>
+
+        <div id="chWeeks"></div>
+
+        <div class="card" id="chDetail" style="margin-top:18px"></div>
+
+        <p class="tiny">
+          Salti un giorno? Non succede niente: il ciclo aspetta te, non il calendario.<br>
+          <button id="chQuitBtn" style="color:var(--muted);text-decoration:underline;font-size:12px;margin-top:8px">Abbandona il ciclo</button>
+        </p>
+      </div>
+
     </section>
 
     <!-- ============ PROGRESSI ============ -->
@@ -288,6 +425,7 @@ nav button[aria-selected=true]{color:var(--text)}
         <div class="eyebrow" style="margin-bottom:8px">Respiro e rilascio</div>
         <p class="sub" id="brStat" style="margin:0"></p>
         <p class="sub" id="rxStat" style="margin:8px 0 0"></p>
+        <p class="sub" id="strStat" style="margin:8px 0 0"></p>
       </div>
 
       <div class="card">
@@ -409,7 +547,7 @@ nav button[aria-selected=true]{color:var(--text)}
         <p>Col telefono muto restano quindi l'<b>alone luminoso</b> ai bordi dello schermo, che si coglie con la coda dell'occhio senza fissare il display, e gli <b>auricolari</b>: con le cuffie collegate l'audio esce comunque, silenzioso o no.</p>
 
         <p class="sub" style="font-size:12.5px;margin:22px 0 0;text-align:center;
-             font-variant-numeric:tabular-nums">Marea · versione <b id="verNum">10</b></p>
+             font-variant-numeric:tabular-nums">Marea · versione <b id="verNum">12</b></p>
 
         <div class="warn">
           <p>Questa app è uno strumento di allenamento, non una diagnosi. Rivolgiti a un medico o a un fisioterapista specializzato in riabilitazione del pavimento pelvico se hai dolore durante o dopo gli esercizi, se i sintomi peggiorano, se non riesci a percepire la contrazione, o in caso di gravidanza, post parto, post chirurgia prostatica. Un pavimento pelvico troppo contratto dà gli stessi sintomi di uno debole e richiede il trattamento opposto: in quel caso allenarsi di più peggiora le cose.</p>
@@ -422,6 +560,8 @@ nav button[aria-selected=true]{color:var(--text)}
     <div class="nav-in">
       <button data-tab="train" aria-selected="true">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Sessione</button>
+      <button data-tab="cycle" aria-selected="false">
+        <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>Ciclo</button>
       <button data-tab="stats" aria-selected="false">
         <svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg>Progressi</button>
       <button data-tab="guide" aria-selected="false">
@@ -793,7 +933,7 @@ function buildRelaxPhases(t){
    ============================================================ */
 const KEY='marea.v1';
 let mem=null;
-const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[], breath:[], relax:[], family:'kegel', brDur:5, brWin:4, brRounds:3, lastBackup:null,
+const DEFAULT={v:1, level:1, levelSessions:0, history:[], recent:[], breath:[], relax:[], family:'kegel', brDur:5, brWin:4, brRounds:3, lastBackup:null, challenge:null, str:[], strDiff:'std',
                settings:{sound:true, voice:false, wake:true, haptic:true, flash:true}};
 
 function load(){
@@ -1230,8 +1370,9 @@ function paintStrip(){
 function enterPhase(i){
   const p=R.phases[i];
   R.i=i; R.t0=performance.now();
-  const eff = p.kind==='c';
+  const eff = p.kind==='c' || p.kind==='set' || p.kind==='wt';
   const COL={c:'var(--effort)', r:'var(--release)', prep:'var(--gold)',
+             set:'var(--effort)', wt:'var(--effort)',
              bi:'var(--calm)', bo:'var(--release)', bh:'var(--gold)', open:'var(--effort)'};
   const col = COL[p.kind] || 'var(--release)';
   $('#arc').style.stroke=col;
@@ -1249,7 +1390,9 @@ function enterPhase(i){
   $('#cueSub').textContent=p.sub||'';
   $('#infoL').textContent=p.blk?`${p.blk}`:'';
   $('#infoR').textContent=p.tot?`${p.idx}/${p.tot}`:'';
-  $('#skipBtn').textContent = p.kind==='open' ? 'Ho bisogno di respirare'
+  $('#skipBtn').textContent = p.kind==='set' ? 'Serie fatta ✓'
+                            : p.kind==='open' ? 'Ho bisogno di respirare'
+                            : R.mode==='str' ? 'Salta esercizio'
                             : (R.mode==='breath' ? 'Salta' : 'Salta blocco');
   paintStrip();
   // Un solo segnale forte all'inizio della contrazione: i passaggi interni
@@ -1272,7 +1415,7 @@ function tick(){
   if(!R.on) return;
   if(!R.paused){
     const p=R.phases[R.i];
-    if(p.kind==='open'){            // apnea: nessun limite, si conta in salita
+    if(p.kind==='open' || p.kind==='set'){  // apnea e serie a ripetizioni: si conta in salita
       const up=Math.floor((performance.now()-R.t0)/1000);
       if(up!==R._lastSec){ $('#count').textContent=up; R._lastSec=up; }
       $('#arc').setAttribute('stroke-dashoffset','0');
@@ -1290,7 +1433,8 @@ function tick(){
     if(!R._ready && p.kind==='r' && p.dur>=3 && left<=1.05 && R.i+1<R.phases.length){
       R._ready=true;
       $('#cue').textContent='Pronto…';
-      $('#cueSub').textContent='Inspira';
+      $('#cueSub').textContent = R.mode==='str'
+        ? (R.phases[R.i+1].label||'') : 'Inspira';
     }
     const frac=Math.min(1,el/p.dur);
     $('#arc').setAttribute('stroke-dashoffset', (653.45*frac).toFixed(1));
@@ -1326,6 +1470,24 @@ function quit(){
    ============================================================ */
 function finish(){
   const done=R.phases.slice(0,R.i+1);
+  $('#done .eyebrow').textContent='Sessione completata';
+  if(R.mode==='str'){
+    const sets=done.filter(x=>x.isSet).length;
+    const dur=Math.round((performance.now()-R._st)/1000);
+    beep(392,.5,.12); setTimeout(()=>beep(523,.7,.1),260);
+    quit();
+    state.str.push({d:today(), id:R.t.id, name:R.t.name, diff:state.strDiff||'std', sets, dur});
+    save();
+    $('#dRepsL').textContent='Serie';    $('#dReps').textContent=sets;
+    $('#dHoldL').textContent='Durata';   $('#dHold').textContent=fmtHold(dur);
+    $('#dStreakL').textContent='Sedute'; $('#dStreak').textContent=state.str.length;
+    $('#doneTitle').textContent='Chiuso.';
+    $('#doneMsg').textContent=R.t.name+' · '+STR_DIFF[strDi()].name+
+      '. Il muscolo cresce fuori dalla seduta: sonno e proteine fanno il resto.';
+    $('#done').classList.add('on');
+    renderStats(); renderStr();
+    return;
+  }
   if(R.mode==='relax'){
     const dur=Math.round(done.reduce((a,x)=>a+x.dur,0));
     const groups=done.filter(x=>x.isRep).length;
@@ -1424,8 +1586,9 @@ function renderStats(){
   const B=state.breath||[], X=state.relax||[];
   const bx=$('#brStatBox');
   if(bx){
-    bx.style.display = (B.length||X.length) ? 'block' : 'none';
-    const el1=$('#brStat'), el2=$('#rxStat');
+    const S=state.str||[];
+    bx.style.display = (B.length||X.length||S.length) ? 'block' : 'none';
+    const el1=$('#brStat'), el2=$('#rxStat'), el3=$('#strStat');
     if(B.length){
       const mins=Math.round(B.reduce((a,x)=>a+x.dur,0)/60);
       const ret=Math.max(0,...B.map(x=>x.ret||0));
@@ -1439,6 +1602,15 @@ function renderStats(){
         ` · ultima: ${X[X.length-1].name}`;
     }
     el2.style.display=X.length?'block':'none';
+    if(el3){
+      if(S.length){
+        const mins=Math.round(S.reduce((a,x)=>a+x.dur,0)/60);
+        const sets=S.reduce((a,x)=>a+x.sets,0);
+        el3.textContent = `Forza · ${S.length} sedut${S.length===1?'a':'e'} · ${sets} serie · ${mins} min` +
+          ` · ultima: ${S[S.length-1].name}`;
+      }
+      el3.style.display=S.length?'block':'none';
+    }
   }
   const H=state.history;
   $('#sStreak').textContent=streak();
@@ -1563,12 +1735,13 @@ $('#rxList').addEventListener('click',e=>{
 function setFamily(f){
   state.family=f; save();
   $$('#famPick button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.f===f)));
-  ['kegel','breath','relax'].forEach(k=>{
+  ['kegel','breath','relax','str'].forEach(k=>{
     const el=document.getElementById('fam-'+k);
     if(el) el.style.display = k===f ? 'block' : 'none';
   });
   if(f==='breath') renderBreath();
   if(f==='relax') renderRelax();
+  if(f==='str') renderStr();
   window.scrollTo(0,0);
 }
 $('#famPick').addEventListener('click',e=>{
@@ -1582,8 +1755,9 @@ $$('nav button').forEach(b=>b.addEventListener('click',()=>{
   const t=b.dataset.tab;
   $$('nav button').forEach(x=>x.setAttribute('aria-selected', x===b));
   $$('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+t));
-  $('#hdr').textContent = t==='train'?'Marea' : t==='stats'?'Progressi':'Guida';
+  $('#hdr').textContent = {train:'Marea', cycle:'Ciclo', stats:'Progressi', guide:'Guida'}[t] || 'Marea';
   if(t==='stats') renderStats();
+  if(t==='cycle') renderCycle();
   window.scrollTo(0,0);
 }));
 
@@ -1603,6 +1777,10 @@ $('#shuffleBtn').addEventListener('click', ()=>{
 $('#pauseBtn').addEventListener('click',()=>togglePause());
 $('#skipBtn').addEventListener('click',()=>{
   const p=R.on && R.phases[R.i];
+  if(p && p.kind==='set'){
+    if(R.i+1<R.phases.length) enterPhase(R.i+1); else finish();
+    return;
+  }
   if(p && p.kind==='open'){
     R._retention=Math.max(R._retention||0, Math.floor((performance.now()-R.t0)/1000));
     if(R.i+1<R.phases.length) enterPhase(R.i+1); else finish();
@@ -1691,7 +1869,502 @@ if('serviceWorker' in navigator){
   });
 }
 
-renderNext(); renderStats(); renderBackup(); renderFolder();
+
+/* ============================================================
+   10. CICLO — la sfida dei 28 giorni
+   Il ciclo non e' una libreria nuova: e' un percorso che pesca
+   dai protocolli gia' esistenti, sale di livello ogni settimana
+   e incatena kegel + respiro + rilascio in un unico giorno.
+   ============================================================ */
+const CH_LEN=28;
+// slot per giorno della settimana: a,b,c,d sono i quattro allenamenti
+// del livello corrente; rest = riposo attivo; final = chiusura
+const CH_ORDER=[
+  ['a','b','c','d','a','c','rest'],
+  ['a','b','c','d','a','c','rest'],
+  ['a','b','c','d','a','c','rest'],
+  ['a','b','c','d','b','c','final']
+];
+const CH_BREATH=['diaf',null,'coer',null,'exh',null,'coer'];
+const CH_RESTRX=['rxshort','rxfull','rxscan','rxshort'];
+const CH_WEEKS=[
+  {t:'Ritrovare il gesto',      d:'Poco carico, molta tecnica. Serve a sentire dove sta il muscolo.'},
+  {t:'Allungare la tenuta',     d:'Le contrazioni durano di piu\u0300 e il recupero si accorcia.'},
+  {t:'Reggere in piedi',        d:'Stessa qualita\u0300 contro gravita\u0300: e\u0300 qui che si vede il lavoro.'},
+  {t:'Portarlo nella vita',     d:'Pre-contrazione prima dello sforzo, il gesto che usi davvero.'}
+];
+
+/* ---- luna: percorso della parte illuminata -------------------
+   k = frazione illuminata (0 nuova, 1 piena). La curva a sinistra
+   e' il terminatore: raggio r(1-2k), quindi si rovescia da sola
+   passando da falce a gibbosa.                                  */
+function moonPath(r,k){
+  k=Math.max(0,Math.min(1,k));
+  const N=26, rx=r*(1-2*k), p=[];
+  for(let i=0;i<=N;i++){ const t=-Math.PI/2+Math.PI*i/N; p.push([r*Math.cos(t), r*Math.sin(t)]); }
+  for(let i=N;i>=0;i--){ const t=-Math.PI/2+Math.PI*i/N; p.push([rx*Math.cos(t), r*Math.sin(t)]); }
+  return 'M'+p.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join('L')+'Z';
+}
+const chLit = n => (1-Math.cos(Math.PI*Math.max(0,Math.min(CH_LEN,n))/CH_LEN))/2;
+
+/* ---- il programma ------------------------------------------- */
+function chLvl(){ return (state.challenge && state.challenge.lvl) || state.level; }
+function chDay(n){
+  const wi=Math.min(3,Math.ceil(n/7)-1), di=(n-1)%7;
+  const lvl=Math.min(4, chLvl()+wi), slot=CH_ORDER[wi][di];
+  const d={n, week:wi+1, lvl, rest:false, kegel:null, breath:null, relax:null, title:''};
+  const W=id=>WORKOUTS.find(x=>x.id===id), B=id=>BREATH.find(x=>x.id===id), X=id=>RELAX.find(x=>x.id===id);
+  if(slot==='rest'){
+    d.rest=true; d.title='Riposo attivo';
+    d.breath=B(wi===1?'478':'coer'); d.relax=X(CH_RESTRX[wi]);
+  } else if(slot==='final'){
+    d.title='Chiusura del ciclo';
+    d.kegel=W('l'+lvl+'d'); d.relax=X('rxshort');
+  } else {
+    d.kegel=W('l'+lvl+slot);
+    if(CH_BREATH[di]) d.breath=B(CH_BREATH[di]);
+    d.title=d.kegel?d.kegel.name:'Allenamento';
+  }
+  return d;
+}
+function chBreathDur(t){
+  try{ return buildBreathPhases(t,{w:state.brWin,rounds:state.brRounds,secs:state.brDur*60})
+        .reduce((a,x)=>a+x.dur,0); }catch(e){ return 300; }
+}
+function chRelaxDur(t){
+  try{ return buildRelaxPhases(t).reduce((a,x)=>a+x.dur,0); }catch(e){ return 300; }
+}
+function chParts(d){
+  const r=[];
+  if(d.kegel){ const s=summarize(d.kegel);
+    r.push({c:'var(--effort)', n:d.kegel.name, m:s.reps+' contrazioni \u00b7 '+fmtShort(s.dur)}); }
+  if(d.breath) r.push({c:'var(--gold)', n:'Respiro \u00b7 '+d.breath.name, m:fmtShort(chBreathDur(d.breath))});
+  if(d.relax)  r.push({c:'var(--release)', n:'Rilascio \u00b7 '+d.relax.name, m:fmtShort(chRelaxDur(d.relax))});
+  return r;
+}
+function chDur(d){
+  let s=0;
+  if(d.kegel) s+=summarize(d.kegel).dur;
+  if(d.breath) s+=chBreathDur(d.breath);
+  if(d.relax) s+=chRelaxDur(d.relax);
+  return s;
+}
+
+/* ---- disegno ------------------------------------------------- */
+function chDialSVG(el, dayDone, dayNow){
+  const R=86, C=100, segs=[];
+  for(let i=0;i<CH_LEN;i++){
+    const gap=2.6, step=360/CH_LEN;
+    const a0=(-90+i*step+gap/2)*Math.PI/180, a1=(-90+(i+1)*step-gap/2)*Math.PI/180;
+    const x0=C+R*Math.cos(a0), y0=C+R*Math.sin(a0);
+    const x1=C+R*Math.cos(a1), y1=C+R*Math.sin(a1);
+    const cls = i<dayDone ? 'on' : (i+1===dayNow ? 'now' : 'off');
+    segs.push(`<path class="seg ${cls}" stroke-width="4.4" d="M${x0.toFixed(2)},${y0.toFixed(2)} A${R},${R} 0 0,1 ${x1.toFixed(2)},${y1.toFixed(2)}"/>`);
+  }
+  const k=chLit(dayDone);
+  el.innerHTML=`
+    <defs>
+      <radialGradient id="chMoon" cx="38%" cy="32%">
+        <stop offset="0%" stop-color="#FFF6E2"/><stop offset="55%" stop-color="#EFDFC0"/>
+        <stop offset="100%" stop-color="#C9A97A"/>
+      </radialGradient>
+      <filter id="chGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="9"/>
+      </filter>
+    </defs>
+    <circle cx="100" cy="100" r="58" fill="url(#chMoon)" opacity="${(0.05+k*0.30).toFixed(3)}" filter="url(#chGlow)"/>
+    ${segs.join('')}
+    <circle cx="100" cy="100" r="58" fill="#221D36" stroke="#3B3358" stroke-width="1"/>
+    <g transform="translate(100,100)"><path d="${moonPath(58,k)}" fill="url(#chMoon)"/></g>`;
+}
+function chTile(n, cls, sel, rest){
+  // pavimento sulla frazione illuminata: nei primi giorni la falce vera
+  // sarebbe un filo nero invisibile a 25 px
+  const k=0.13+0.87*chLit(n), col = rest ? '#9FD4B4' : '#EFDFC0';
+  return `<button class="cd ${cls}" data-n="${n}" aria-pressed="${sel?'true':'false'}">
+    <svg viewBox="-15 -15 30 30" aria-hidden="true">
+      <circle r="13.4" fill="#1B172B" stroke="#3B3358" stroke-width=".9"/>
+      <path d="${moonPath(13.4,k)}" fill="${col}"/>
+    </svg>${n}</button>`;
+}
+
+let chSel=null;
+
+function renderCycle(){
+  const c=state.challenge;
+  // richiamo nella scheda Sessione
+  const ban=$('#chBanner');
+  if(ban){
+    if(c && c.day<=CH_LEN){
+      const d=chDay(c.day);
+      ban.style.display='flex';
+      ban.innerHTML=`<svg viewBox="-15 -15 30 30"><circle r="13.4" fill="#1B172B" stroke="#3B3358" stroke-width=".9"/>
+        <path d="${moonPath(13.4,chLit(c.day-1))}" fill="#EFDFC0"/></svg>
+        <span class="t"><b>Giorno ${c.day} di 28</b><span>${d.rest?'Riposo attivo':d.title} \u00b7 ${fmtShort(chDur(d))}</span></span>
+        <span class="go">\u203a</span>`;
+    } else ban.style.display='none';
+  }
+  if(!$('#chMain')) return;
+
+  if(!c){
+    $('#chIntro').style.display='';
+    $('#chMain').style.display='none';
+    const dl=$('#chIntroDial'); if(dl) chDialSVG(dl,0,0);
+    $$('#chLvl button').forEach(b=>b.setAttribute('aria-pressed', String(+b.dataset.l===chLvl())));
+    const L=LEVELS[chLvl()-1];
+    $('#chLvlDesc').innerHTML='<b>'+L.name+'</b> \u2014 '+L.desc+' Le settimane successive salgono da sole.';
+    return;
+  }
+  $('#chIntro').style.display='none';
+  $('#chMain').style.display='';
+
+  const doneN=Math.min(CH_LEN, c.day-1), live=Math.min(CH_LEN, c.day), over=c.day>CH_LEN;
+  chDialSVG($('#chDial'), doneN, over?0:live);
+  $('#chDayNum').innerHTML = over ? 'Ciclo chiuso' : 'Giorno '+live+'<small>di 28</small>';
+  const wk=CH_WEEKS[Math.min(3,Math.ceil(live/7)-1)];
+  $('#chPhase').textContent = over
+    ? 'Ventotto giorni completati. La luna e\u0300 piena.'
+    : 'Settimana '+Math.ceil(live/7)+' \u00b7 '+wk.t;
+  $('#chChips').innerHTML =
+    `<span class="ch-chip gold">${doneN} su 28</span>`+
+    `<span class="ch-chip">Livello ${chDay(Math.min(CH_LEN,live)).lvl} \u00b7 ${LEVELS[chDay(Math.min(CH_LEN,live)).lvl-1].name}</span>`;
+
+  // griglia divisa per settimane
+  let html='';
+  for(let w=0;w<4;w++){
+    const liveWk = !over && Math.ceil(live/7)===w+1;
+    html+=`<div class="ch-wk${liveWk?' live':''}"><b>Settimana ${w+1}</b><i></i><span>${CH_WEEKS[w].t}</span></div><div class="ch-grid">`;
+    for(let i=1;i<=7;i++){
+      const n=w*7+i, d=chDay(n);
+      const cls = n<c.day ? 'done' : (n===c.day ? 'now' : 'lock');
+      html+=chTile(n, cls, chSel===n, d.rest);
+    }
+    html+='</div>';
+  }
+  $('#chWeeks').innerHTML=html;
+
+  // scheda del giorno
+  if(chSel==null || chSel>CH_LEN) chSel=Math.min(CH_LEN, c.day);
+  const d=chDay(chSel), open = chSel<=c.day;
+  const parts=chParts(d).map(p=>
+    `<li><i class="dot" style="background:${p.c}"></i><span class="nm">${p.n}</span><span class="qt">${p.m}</span></li>`).join('');
+  let btn='';
+  if(chSel===c.day) btn=`<button class="btn" id="chGo">Inizia il giorno ${chSel}</button>`;
+  else if(open)     btn=`<button class="btn btn-ghost" id="chGo">Rifai questo giorno</button>`;
+  else              btn=`<p class="ch-locked">Si apre quando chiudi il giorno ${c.day}.</p>`;
+  $('#chDetail').innerHTML=`
+    <div class="eyebrow" style="margin-bottom:7px">Giorno ${chSel} \u00b7 ${d.rest?'Riposo attivo':'Settimana '+d.week}</div>
+    <h2>${d.title}</h2>
+    <p class="sub" style="margin:6px 0 0">${d.rest
+      ? 'Niente kegel oggi. Il tessuto si ricostruisce nel recupero: saltare il riposo e\u0300 il modo piu\u0300 rapido per fermarsi.'
+      : CH_WEEKS[d.week-1].d}</p>
+    <ul class="ch-parts">${parts}</ul>
+    <div class="wk-meta" style="margin-top:14px">
+      <div><b>${fmtShort(chDur(d))}</b><span>Durata</span></div>
+      <div><b>${chParts(d).length}</b><span>Blocchi</span></div>
+      <div><b>${LEVELS[d.lvl-1].pos}</b><span>Posizione</span></div>
+    </div>
+    <div class="btn-row" style="margin-top:16px">${btn}</div>`;
+  const go=$('#chGo'); if(go) go.addEventListener('click',()=>chStartDay(chSel));
+}
+
+/* ---- esecuzione di un giorno --------------------------------- */
+let CH={run:false, q:[], day:null};
+function chStartDay(n){
+  const d=chDay(n);
+  CH.q=[]; CH.day=n; CH.run=true;
+  if(d.kegel) CH.q.push({m:'k',o:d.kegel});
+  if(d.breath) CH.q.push({m:'b',o:d.breath});
+  if(d.relax)  CH.q.push({m:'r',o:d.relax});
+  chNext();
+}
+function chNext(){
+  const it=CH.q.shift();
+  if(!it){ chDayDone(); return; }
+  if(it.m==='k'){ current=it.o; startSession(); }
+  else if(it.m==='b') startBreath(it.o);
+  else startRelax(it.o);
+}
+function chLabel(it){
+  return it.m==='b' ? 'Respiro \u00b7 '+it.o.name
+       : it.m==='r' ? 'Rilascio \u00b7 '+it.o.name
+       : it.o.name;
+}
+function chDayDone(){
+  const wasDay=CH.day;
+  CH.run=false; CH.q=[];
+  const c=state.challenge;
+  if(c && wasDay===c.day){
+    c.done.push({n:wasDay, d:today()});
+    c.day=wasDay+1;
+    if(c.day>CH_LEN) c.end=today();
+    save();
+  }
+  const closed = c && c.day>CH_LEN;
+  const prev=$('#doneMsg').textContent;
+  const lvlUp = prev.indexOf('Sei passato')===0 ? ' '+prev : '';
+  $('#done .eyebrow').textContent='Ciclo di Marea';
+  $('#doneTitle').textContent = closed ? 'Luna piena.' : 'Giorno '+wasDay+' chiuso.';
+  $('#doneMsg').textContent = (closed
+    ? 'Ventotto giorni completati. Da qui il mantenimento vale piu\u0300 di un altro ciclo: due o tre sessioni a settimana tengono quello che hai costruito.'
+    : 'Ne restano '+(CH_LEN-wasDay)+'. Il prossimo si e\u0300 aperto: '+
+      (chDay(wasDay+1).rest?'riposo attivo':chDay(wasDay+1).title)+'.') + lvlUp;
+  $('#doneBtn').textContent='Chiudi';
+  chSel=null;
+  renderCycle();
+}
+
+// il fine sessione originale resta intatto: qui gli si appende
+// solo il comportamento di coda quando si sta correndo un giorno
+const chFinishBase=finish;
+finish=function(){
+  const inCh=CH.run;
+  chFinishBase();
+  if(!inCh) return;
+  if(CH.q.length){
+    const nm=chLabel(CH.q[0]);
+    $('#done .eyebrow').textContent='Giorno '+CH.day+' \u00b7 a meta\u0300';
+    $('#doneTitle').textContent='Bene.';
+    $('#doneMsg').textContent='Manca '+nm+'. Riprendi subito, senza pause lunghe.';
+    $('#doneBtn').textContent='Continua \u2192 '+nm;
+  } else chDayDone();
+};
+
+$('#doneBtn').addEventListener('click',()=>{ if(CH.run && CH.q.length) chNext(); });
+// uscita volontaria: se il runner si e' davvero chiuso, il giorno decade
+$('#quitBtn').addEventListener('click',()=>{
+  if(!R.on && CH.run){ CH.run=false; CH.q=[]; toast('Giorno interrotto, riprendilo quando vuoi'); }
+});
+
+$$('#chLvl button').forEach(b=>b.addEventListener('click',()=>{
+  const n=+b.dataset.l;
+  state.level=n; state.levelSessions=0; state.recent=[];
+  save(); paintLvlPick(); renderNext(); renderStats(); renderCycle();
+}));
+$('#chStartBtn').addEventListener('click',()=>{
+  state.challenge={lvl:state.level, start:today(), day:1, done:[], end:null};
+  chSel=1; save(); renderCycle();
+  toast('Ciclo aperto \u00b7 28 giorni');
+});
+$('#chQuitBtn').addEventListener('click',()=>{
+  if(!confirm('Abbandonare il ciclo? I progressi dei giorni restano nello storico, ma il percorso riparte da zero.')) return;
+  state.challenge=null; chSel=null; save(); renderCycle();
+});
+$('#chWeeks').addEventListener('click',e=>{
+  const b=e.target.closest('.cd'); if(!b) return;
+  chSel=+b.dataset.n; renderCycle();
+  $('#chDetail').scrollIntoView({behavior:'smooth', block:'center'});
+});
+$('#chBanner').addEventListener('click',()=>{
+  const nb=$$('nav button').find(x=>x.dataset.tab==='cycle'); if(nb) nb.click();
+});
+
+
+/* ============================================================
+   11. FORZA — calisthenics a casa con kettlebell ed elastico
+   Tre sedute a rotazione piu' una espressa. Ogni esercizio ha
+   tre varianti: si cambia difficolta' senza cambiare scheda.
+   ============================================================ */
+const STR_DIFF=[
+  {id:'base', name:'Base',     i:0, desc:'Varianti facilitate. Se torni dopo mesi fermo, parti da qui per due settimane.'},
+  {id:'std',  name:'Standard', i:1, desc:'Il punto di partenza per chi si allena a periodi. Dovresti finire ogni serie con due ripetizioni ancora in canna.'},
+  {id:'plus', name:'Avanzato', i:2, desc:'Leve piu\u0300 lunghe e tempi controllati. Passaci solo quando chiudi tutte le serie in cima al range.'}
+];
+const STR_W=[
+  {id:'sa', tag:'Seduta A', name:'Spinta', focus:'Gambe, petto, spalle',
+   desc:'Squat, piegamenti e distensioni sopra la testa. La seduta piu\u0300 semplice da eseguire bene: usala come rientro dopo una pausa.',
+   warm:[{n:'Halo con kettlebell', dur:40, cue:'Gira la campana intorno alla testa, gomiti stretti.'},
+         {n:'Squat a vuoto lento', dur:45, cue:'Scendi in tre secondi, apri le anche in basso.'},
+         {n:'Ponte glutei', dur:40, cue:'Spingi coi talloni, costole basse, non inarcare la schiena.'}],
+   ex:[
+    {n:['Squat a corpo libero','Goblet squat','Goblet squat 1\u00bd'], sets:4, reps:['12','8-10','6-8'], rest:75, est:45,
+     load:'Kettlebell 20 kg al petto', cue:'Gomiti dentro le ginocchia in basso, tallone piantato, schiena lunga.'},
+    {n:['Piegamenti su rialzo','Piegamenti a terra','Piegamenti piedi rialzati'], sets:3, reps:['10-12','8-12','6-10'], rest:75, est:40,
+     load:'Mani su tavolo o divano per la versione facilitata', cue:'Corpo in linea, gomiti a 45\u00b0, petto verso le mani e non mento.'},
+    {n:['Military press seduto','Military press un braccio','Push press + negativa'], sets:3, reps:['8 per lato','6-8 per lato','8-10 per lato'], rest:60, est:50,
+     load:'Kettlebell 20 kg', cue:'Costole basse, glutei attivi: la schiena non si inarca per far salire il peso.'},
+    {n:['Face pull elastico','Face pull elastico','Face pull + tenuta 2s'], sets:3, reps:['15','12-15','12'], rest:45, est:35,
+     load:'Elastico ancorato ad altezza viso', cue:'La tensione si regola con la distanza dall\u2019ancoraggio, non con la forza.'},
+    {n:['Dead bug','Hollow hold','Hollow hold arti tesi'], sets:3, time:[30,30,40], rest:45,
+     load:'A terra', cue:'Zona lombare schiacciata al pavimento: se si stacca, accorcia le leve.'}
+   ]},
+
+  {id:'sb', tag:'Seduta B', name:'Trazione', focus:'Dorso, catena posteriore',
+   desc:'Swing, tirate e stacco. Senza sbarra la trazione verticale la fa l\u2019elastico ancorato in alto, quella orizzontale la kettlebell.',
+   warm:[{n:'Hip hinge a vuoto', dur:45, cue:'Bastone o mani sul bacino: il movimento arriva dall\u2019anca, non dalla schiena.'},
+         {n:'Cat-camel', dur:40, cue:'Vertebra per vertebra, senza forzare i finali.'},
+         {n:'Dislocazioni con elastico', dur:40, cue:'Presa larga, braccia tese, passa dietro solo fin dove arrivi.'}],
+   ex:[
+    {n:['Swing a due mani','Swing russo','Swing + tenuta in alto'], sets:5, reps:['10','15','20'], rest:60, est:35,
+     load:'Kettlebell 20 kg', cue:'\u00c8 uno scatto d\u2019anca, non un sollevamento di braccia. La campana arriva al petto e basta.'},
+    {n:['Pulldown in piedi','Pulldown in ginocchio','Pulldown a un braccio'], sets:4, reps:['12','10-12','8-10'], rest:60, est:40,
+     load:'Elastico sopra la porta', cue:'Scapole prima dei gomiti. Allontanati dall\u2019ancoraggio per aumentare il carico.'},
+    {n:['Rematore appoggiato','Rematore un braccio','Rematore con pausa 2s'], sets:3, reps:['10-12 per lato','8-10 per lato','8 per lato'], rest:60, est:50,
+     load:'Kettlebell 20 kg, mano libera sul divano', cue:'Bacino quadrato: se ruoti per tirare su il peso, il dorso non lavora piu\u0300.'},
+    {n:['Stacco rumeno leggero','Stacco rumeno','Stacco rumeno a una gamba'], sets:3, reps:['12','10-12','8 per lato'], rest:60, est:45,
+     load:'Kettlebell 20 kg', cue:'Ginocchia morbide e ferme, la campana sfiora le cosce, ti fermi quando i femorali tirano.'},
+    {n:['Plank sulle ginocchia','Plank','Plank con braccio alzato'], sets:3, time:[30,40,40], rest:45,
+     load:'A terra', cue:'Glutei contratti e costole chiuse: meglio trenta secondi buoni che due minuti a pancia in giu\u0300.'}
+   ]},
+
+  {id:'sc', tag:'Seduta C', name:'Corpo intero', focus:'Gambe singole, esplosivita\u0300',
+   desc:'Lavoro su una gamba alla volta e alzate complete. \u00c8 la seduta piu\u0300 impegnativa: mettila quando hai dormito.',
+   warm:[{n:'Jumping jack', dur:45, cue:'Ritmo tranquillo, serve solo ad alzare il motore.'},
+         {n:'Affondo con rotazione', dur:50, cue:'Alterna i lati, apri il torace verso la gamba avanti.'},
+         {n:'Squat a vuoto', dur:40, cue:'Ultimi cinque scendendo lentamente.'}],
+   ex:[
+    {n:['Affondo statico','Split squat bulgaro','Split squat bulgaro con pausa'], sets:3, reps:['10 per lato','8 per lato','6-8 per lato'], rest:75, est:60,
+     load:'Piede dietro sul divano, kettlebell al petto', cue:'Peso sul tallone davanti, busto leggermente inclinato. Se traballi, tocca il muro con una mano.'},
+    {n:['Swing + press','Clean & press','Clean & press + squat'], sets:3, reps:['6 per lato','5 per lato','5 per lato'], rest:75, est:55,
+     load:'Kettlebell 20 kg', cue:'Il clean si accompagna, non si strappa: infila la mano invece di far girare la campana sul polso.'},
+    {n:['Piegamenti su rialzo','Piegamenti presa stretta','Piegamenti diamante'], sets:3, reps:['10','8-10','6-8'], rest:60, est:40,
+     load:'A terra', cue:'Gomiti che sfiorano i fianchi. Se cedono i polsi, appoggia i pugni.'},
+    {n:['Good morning a vuoto','Good morning elastico','Good morning + tenuta'], sets:3, reps:['15','12-15','12'], rest:45, est:35,
+     load:'Elastico sotto i piedi, dietro il collo', cue:'Stesso movimento dello stacco, ma il carico spinge in avanti: costole basse.'},
+    {n:['Dead bug','Dead bug lento','Hollow rock'], sets:3, time:[30,40,40], rest:45,
+     load:'A terra', cue:'Espira quando la gamba scende: \u00e8 il respiro che tiene ferma la lombare.'}
+   ]},
+
+  {id:'sx', tag:'Espresso', name:'Circuito breve', focus:'Tre giri, corpo intero',
+   desc:'Quando il tempo non c\u2019\u00e8. Tre giri senza pause dentro il giro, un minuto tra un giro e l\u2019altro. Non sostituisce le sedute lunghe, le tiene in vita.',
+   circuit:3, roundRest:60,
+   warm:[{n:'Squat a vuoto e circonduzioni', dur:60, cue:'Un minuto per svegliare anche e spalle, poi si parte.'}],
+   ex:[
+    {n:['Squat a corpo libero','Goblet squat','Goblet squat'], sets:1, reps:['12','10','12'], rest:15, est:40, load:'Kettlebell 20 kg', cue:'Ritmo continuo, senza fermarti in basso.'},
+    {n:['Piegamenti su rialzo','Piegamenti a terra','Piegamenti a terra'], sets:1, reps:['10','8','12'], rest:15, est:35, load:'A terra', cue:'Se cedi, appoggia le ginocchia e continua.'},
+    {n:['Swing a due mani','Swing russo','Swing russo'], sets:1, reps:['12','15','20'], rest:15, est:35, load:'Kettlebell 20 kg', cue:'Scatto d\u2019anca. Se il respiro salta, rallenta il ritmo non il movimento.'},
+    {n:['Plank sulle ginocchia','Plank','Plank'], sets:1, time:[30,30,45], rest:0, load:'A terra', cue:'Ultimo blocco del giro, poi recuperi.'}
+   ]}
+];
+
+const strDi = () => Math.max(0, STR_DIFF.findIndex(d=>d.id===(state.strDiff||'std')));
+const strName = (ex) => ex.n[strDi()];
+const strReps = (ex) => ex.time ? ex.time[strDi()]+' secondi' : ex.reps[strDi()]+' ripetizioni';
+
+function buildStrPhases(w){
+  const P=[], di=strDi();
+  P.push({kind:'prep', label:'Preparati', sub:w.name+' \u00b7 '+STR_DIFF[di].name, dur:10, level:0});
+  (w.warm||[]).forEach((x,i)=>{
+    P.push({kind:'wt', label:x.n, sub:x.cue, dur:x.dur, level:.45,
+            blk:'Riscaldamento', idx:i+1, tot:w.warm.length});
+  });
+  if(w.warm && w.warm.length)
+    P.push({kind:'r', label:'Si comincia', sub:strName(w.ex[0]), dur:20, level:0, blk:'Riscaldamento', idx:1, tot:1});
+
+  const push = (ex, si, tot, tag) => {
+    const nm=strName(ex);
+    if(ex.time) P.push({kind:'wt', label:nm, sub:ex.time[di]+' secondi \u00b7 '+ex.cue, dur:ex.time[di],
+                        level:.9, isSet:1, blk:nm+tag, idx:si, tot});
+    else        P.push({kind:'set', label:nm, sub:ex.reps[di]+' ripetizioni \u00b7 '+ex.load, dur:0,
+                        level:.9, isSet:1, blk:nm+tag, idx:si, tot});
+  };
+
+  if(w.circuit){
+    for(let g=1;g<=w.circuit;g++){
+      w.ex.forEach((ex,ei)=>{
+        push(ex, g, w.circuit, ' \u00b7 giro '+g);
+        const last = ei===w.ex.length-1;
+        if(!last && ex.rest) P.push({kind:'r', label:'Cambio', sub:strName(w.ex[ei+1]), dur:ex.rest, level:0,
+                                     blk:'Giro '+g, idx:g, tot:w.circuit});
+      });
+      if(g<w.circuit) P.push({kind:'r', label:'Fine giro '+g, sub:'Recupera e riparti', dur:w.roundRest||60,
+                              level:0, blk:'Giro '+g, idx:g, tot:w.circuit});
+    }
+    return P;
+  }
+
+  w.ex.forEach((ex,ei)=>{
+    for(let s=1;s<=ex.sets;s++){
+      push(ex, s, ex.sets, '');
+      if(s<ex.sets) P.push({kind:'r', label:'Recupero', sub:'Serie '+s+' di '+ex.sets+' fatta', dur:ex.rest,
+                            level:0, blk:strName(ex), idx:s, tot:ex.sets});
+    }
+    if(ei<w.ex.length-1)
+      P.push({kind:'r', label:'Cambio esercizio', sub:strName(w.ex[ei+1]), dur:45, level:0,
+              blk:'Transizione', idx:1, tot:1});
+  });
+  return P;
+}
+
+function strDur(w){
+  const di=strDi();
+  let s=(w.warm||[]).reduce((a,x)=>a+x.dur,0) + 30;
+  if(w.circuit){
+    w.ex.forEach(ex=>{ s += w.circuit*((ex.time?ex.time[di]:ex.est||40) + (ex.rest||0)); });
+    s += (w.circuit-1)*(w.roundRest||60);
+  } else {
+    w.ex.forEach((ex,i)=>{
+      const work = ex.time?ex.time[di]:(ex.est||40);
+      s += ex.sets*work + (ex.sets-1)*(ex.rest||0) + (i<w.ex.length-1?45:0);
+    });
+  }
+  return s;
+}
+function strSets(w){
+  return w.circuit ? w.circuit*w.ex.length : w.ex.reduce((a,x)=>a+x.sets,0);
+}
+// rotazione consigliata: la seduta piu' lontana nel tempo tra A, B e C
+function strNextId(){
+  const L=state.str||[];
+  const order=['sa','sb','sc'];
+  let best=order[0], bestPos=-1;
+  order.forEach(id=>{
+    let pos=-1;
+    for(let i=L.length-1;i>=0;i--){ if(L[i].id===id){ pos=L.length-i; break; } }
+    if(pos===-1) pos=999;
+    if(pos>bestPos){ bestPos=pos; best=id; }
+  });
+  return best;
+}
+
+function renderStr(){
+  const box=$('#strList'); if(!box) return;
+  $$('#strDiff button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.d===(state.strDiff||'std'))));
+  $('#strDiffDesc').textContent=STR_DIFF[strDi()].desc;
+  const next=strNextId();
+  box.innerHTML=STR_W.map(w=>{
+    const rec = w.id===next;
+    return `<div class="card">
+      <span class="wk-focus" style="color:${rec?'var(--gold)':'var(--muted)'};background:${rec?'rgba(217,178,106,.11)':'rgba(156,147,184,.10)'}">${w.tag}${rec?' \u00b7 tocca a questa':''}</span>
+      <h2>${w.name}</h2>
+      <p class="sub" style="margin:6px 0 0;font-size:13px">${w.focus}</p>
+      <p class="sub" style="margin:8px 0 12px">${w.desc}</p>
+      <div class="wk-meta" style="margin:0">
+        <div><b>${fmtShort(strDur(w))}</b><span>Durata</span></div>
+        <div><b>${strSets(w)}</b><span>Serie</span></div>
+        <div><b>${w.ex.length}</b><span>Esercizi</span></div>
+      </div>
+      <ul class="blocks" style="margin-top:14px">${w.ex.map(ex=>
+        `<li><i class="dot" style="background:${ex.time?'var(--release)':'var(--effort)'}"></i>
+         <span class="nm">${strName(ex)}</span>
+         <span class="qt">${w.circuit?'':ex.sets+'\u00d7'}${ex.time?ex.time[strDi()]+'s':ex.reps[strDi()]}</span></li>`).join('')}</ul>
+      <button class="btn strGo" data-id="${w.id}" style="margin-top:16px">Inizia</button>
+    </div>`;
+  }).join('');
+}
+$('#strList').addEventListener('click',e=>{
+  const b=e.target.closest('button.strGo'); if(!b) return;
+  const w=STR_W.find(x=>x.id===b.dataset.id); if(w) startStr(w);
+});
+$$('#strDiff button').forEach(b=>b.addEventListener('click',()=>{
+  state.strDiff=b.dataset.d; save(); renderStr();
+}));
+
+function startStr(w){
+  R.mode='str'; R.t=w; R._sets=0; R._st=performance.now();
+  R.phases=buildStrPhases(w);
+  R.i=0; R.paused=false; R.on=true;
+  audio();
+  $('#runName').textContent=w.name+' \u00b7 '+STR_DIFF[strDi()].name;
+  buildStrip();
+  $('#run').classList.add('on');
+  $('.dial').parentElement.classList.add('wave-anim');
+  requestWake();
+  enterPhase(0);
+  R.raf=requestAnimationFrame(tick);
+}
+
+renderNext(); renderStats(); renderBackup(); renderFolder(); renderCycle(); renderStr();
 setFamily(state.family||'kegel');
 </script>
 </body>
